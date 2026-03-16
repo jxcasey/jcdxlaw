@@ -1031,13 +1031,8 @@
             { id: 'class-15', module: 'Property Law', day: 'Friday', time: '09:00', duration: '1h', venue: 'JM 301', type: 'Lecture' },
         ];
 
+        const APP_VERSION = '2.1';
         let currentPage = 'dashboard';
-        let modules = loadData('jcd_modules', DEFAULT_MODULES);
-        let assessments = loadData('jcd_assessments', []);
-        let assignments = loadData('jcd_assignments', []);
-        let timetable = loadData('jcd_timetable', DEFAULT_TIMETABLE);
-        let notes = loadData('jcd_notes', []);
-        let settings = loadData('jcd_settings', { socsciUrl: '', socsciToken: '', githubGistId: '', githubPat: '' });
 
         function loadData(key, defaultValue) {
             const stored = localStorage.getItem(key);
@@ -1047,6 +1042,20 @@
         function saveData(key, data) {
             localStorage.setItem(key, JSON.stringify(data));
         }
+
+        // Force reset modules & timetable when version changes (clears duplicates + corrupted data)
+        if (localStorage.getItem('jcd_version') !== APP_VERSION) {
+            localStorage.removeItem('jcd_modules');
+            localStorage.removeItem('jcd_timetable');
+            localStorage.setItem('jcd_version', APP_VERSION);
+        }
+
+        let modules = loadData('jcd_modules', DEFAULT_MODULES);
+        let assessments = loadData('jcd_assessments', []);
+        let assignments = loadData('jcd_assignments', []);
+        let timetable = loadData('jcd_timetable', DEFAULT_TIMETABLE);
+        let notes = loadData('jcd_notes', []);
+        let settings = loadData('jcd_settings', { socsciUrl: '', socsciToken: '', githubGistId: '', githubPat: '' });
 
         function navigate(pageId) {
             currentPage = pageId;
