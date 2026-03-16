@@ -1031,7 +1031,7 @@
             { id: 'class-15', module: 'Property Law', day: 'Friday', time: '09:00', duration: '1h', venue: 'JM 301', type: 'Lecture' },
         ];
 
-        const APP_VERSION = '2.1';
+        const APP_VERSION = '2.2';
         let currentPage = 'dashboard';
 
         function loadData(key, defaultValue) {
@@ -1460,6 +1460,19 @@
 
             modalContent.innerHTML = html;
             modal.classList.add('active');
+
+            // Bind event listeners to dynamically created modal buttons
+            modalContent.querySelectorAll('[data-action]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    if (action === 'close-modal') closeModal();
+                });
+            });
+
+            // Close modal when clicking overlay background
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
         }
 
         function closeModal() {
@@ -2004,15 +2017,14 @@
                             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
                             break;
                         case 'view-module': {
-                            const modId = el.dataset.moduleId;
+                            const modId = this.dataset.moduleId;
                             const mod = modules.find(m => m.id === modId);
                             if (!mod) break;
-                            const modAssignments = assignments.filter(a => a.module === mod.name);
-                            const modAssessments = assessments.filter(a => a.module === mod.name);
-                            const modNotes = notes.filter(n => n.module === mod.name);
-                            const modClasses = timetable.filter(c => c.module === mod.name);
-                            openModal(`
-                                <button class="modal-close" data-action="close-modal">✕</button>
+                            const ma = assignments.filter(a => a.module === mod.name);
+                            const ms = assessments.filter(a => a.module === mod.name);
+                            const mn = notes.filter(n => n.module === mod.name);
+                            const mc = timetable.filter(c => c.module === mod.name);
+                            let body = `
                                 <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
                                     <div style="width:52px;height:52px;border-radius:14px;background:${mod.color};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📚</div>
                                     <div>
@@ -2022,50 +2034,20 @@
                                 </div>
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
                                     <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
-                                        <div style="font-size:24px;font-weight:700;">${modAssignments.length}</div>
-                                        <div style="font-size:12px;color:var(--text-secondary);">Assignments</div>
+                                        <div style="font-size:24px;font-weight:700;">${ma.length}</div><div style="font-size:12px;color:var(--text-secondary);">Assignments</div>
                                     </div>
                                     <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
-                                        <div style="font-size:24px;font-weight:700;">${modAssessments.length}</div>
-                                        <div style="font-size:12px;color:var(--text-secondary);">Assessments</div>
+                                        <div style="font-size:24px;font-weight:700;">${ms.length}</div><div style="font-size:12px;color:var(--text-secondary);">Assessments</div>
                                     </div>
                                     <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
-                                        <div style="font-size:24px;font-weight:700;">${modNotes.length}</div>
-                                        <div style="font-size:12px;color:var(--text-secondary);">Notes</div>
+                                        <div style="font-size:24px;font-weight:700;">${mn.length}</div><div style="font-size:12px;color:var(--text-secondary);">Notes</div>
                                     </div>
-                                </div>
-                                ${modClasses.length > 0 ? `
-                                <div style="margin-bottom:20px;">
-                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Classes</div>
-                                    ${modClasses.map(c => `
-                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
-                                            <span style="font-weight:600;">${c.day} ${c.time}</span>
-                                            <span style="color:var(--text-secondary);">${c.type}${c.venue ? ' · ' + c.venue : ''}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>` : ''}
-                                ${modAssessments.length > 0 ? `
-                                <div style="margin-bottom:20px;">
-                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assessments</div>
-                                    ${modAssessments.map(a => `
-                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
-                                            <span style="font-weight:600;">${a.name}</span>
-                                            <span style="color:var(--text-secondary);">${formatDate(a.date)}${a.weight ? ' · ' + a.weight + '%' : ''}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>` : ''}
-                                ${modAssignments.length > 0 ? `
-                                <div style="margin-bottom:20px;">
-                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assignments</div>
-                                    ${modAssignments.map(a => `
-                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
-                                            <span style="font-weight:600;">${a.title}</span>
-                                            <span><span class="status-badge ${(a.status||'pending').toLowerCase()}">${a.status||'Pending'}</span></span>
-                                        </div>
-                                    `).join('')}
-                                </div>` : ''}
-                                ${mod.socsciId ? `<div style="margin-top:8px;"><a href="${settings.socsciUrl}/course/view.php?id=${mod.socsciId}" target="_blank" class="btn btn-secondary btn-small">Open in SocSciLearn ↗</a></div>` : ''}
-                            `);
+                                </div>`;
+                            if (mc.length) body += `<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Classes</div>${mc.map(c=>`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;"><span style="font-weight:600;">${c.day} ${c.time}</span><span style="color:var(--text-secondary);">${c.type}${c.venue?' · '+c.venue:''}</span></div>`).join('')}</div>`;
+                            if (ms.length) body += `<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assessments</div>${ms.map(a=>`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;"><span style="font-weight:600;">${a.name}</span><span style="color:var(--text-secondary);">${formatDate(a.date)}${a.weight?' · '+a.weight+'%':''}</span></div>`).join('')}</div>`;
+                            if (ma.length) body += `<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assignments</div>${ma.map(a=>`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;"><span style="font-weight:600;">${a.title}</span><span class="status-badge ${(a.status||'pending').toLowerCase()}">${a.status||'Pending'}</span></div>`).join('')}</div>`;
+                            if (mod.socsciId && settings.socsciUrl) body += `<a href="${settings.socsciUrl}/course/view.php?id=${mod.socsciId}" target="_blank" class="btn btn-secondary btn-small" style="margin-top:8px;">Open in SocSciLearn ↗</a>`;
+                            showModal(mod.name, body);
                             break;
                         }
                     }
