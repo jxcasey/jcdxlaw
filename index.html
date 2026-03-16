@@ -1341,7 +1341,7 @@
 
         function renderTimetablePage() {
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-            const hours = Array.from({length: 11}, (_, i) => `${7 + i}:00`);
+            const hours = Array.from({length: 11}, (_, i) => `${String(7 + i).padStart(2, '0')}:00`);
 
             return `
                 <div style="overflow-x: auto;">
@@ -1790,54 +1790,47 @@
                 const courses = await call('core_enrol_get_users_courses', `&userid=${uid}`);
                 if (!Array.isArray(courses)) throw new Error('Invalid response');
 
-                const existingNames = new Set(modules.map(m => m.name.toLowerCase()));
+                // Start from clean defaults each sync — avoids accumulating duplicates
+                const freshModules = JSON.parse(JSON.stringify(DEFAULT_MODULES));
 
                 courses.forEach((course, i) => {
-                    let matched = false;
-
-                    // Match by known socsciId first
+                    // Skip if this course id is already mapped to a default module
                     const knownCourse = KNOWN_COURSES[course.id];
                     if (knownCourse) {
-                        const existing = modules.find(m => m.socsciId === course.id || m.name === knownCourse.name);
-                        if (existing) {
-                            existing.socsciId = course.id;
-                            matched = true;
-                        }
-                        // Don't add new — we already have defaults for known courses
-                        matched = true;
+                        // Just ensure the default module has its socsciId set
+                        const def = freshModules.find(m => m.name === knownCourse.name);
+                        if (def) def.socsciId = course.id;
+                        return; // don't add a new entry
                     }
 
-                    // Try matching by name for unknown courses
-                    if (!matched) {
-                        // Clean ugly Moodle shortnames like "2026-51829-244"
-                        let cleanName = (course.fullname || course.shortname || '')
-                            .replace(/\d{4}-\d+-\d+/g, '')
-                            .replace(/\s*\/\s*.*/g, '') // strip Afrikaans after slash
-                            .replace(/\s+\(.*?\)/g, '')
-                            .replace(/\s+-\s+\d+$/g, '') // strip trailing code
-                            .split('|')[0]
-                            .trim();
+                    // Clean ugly Moodle names like "2026-51829-244"
+                    let cleanName = (course.fullname || course.shortname || '')
+                        .replace(/\d{4}-\d+-\d+/g, '')
+                        .replace(/\s*\/\s*.*/g, '')   // strip Afrikaans after slash
+                        .replace(/\s+\(.*?\)/g, '')
+                        .replace(/\s+-\s+\d+$/g, '')  // strip trailing code
+                        .split('|')[0]
+                        .trim();
 
-                        if (!cleanName || /^\d+$/.test(cleanName) || cleanName.length < 3) return;
+                    if (!cleanName || /^\d+$/.test(cleanName) || cleanName.length < 3) return;
 
-                        // Check if already exists by name
-                        const existsByName = modules.find(m => m.name.toLowerCase() === cleanName.toLowerCase());
-                        if (existsByName) {
-                            existsByName.socsciId = course.id;
-                        } else if (!existingNames.has(cleanName.toLowerCase())) {
-                            modules.push({
-                                id: `mod-${Date.now()}-${i}`,
-                                name: cleanName,
-                                code: course.shortname || '',
-                                type: 'Year Module',
-                                color: COLOR_ARRAY[modules.length % COLOR_ARRAY.length],
-                                socsciId: course.id,
-                            });
-                            existingNames.add(cleanName.toLowerCase());
-                        }
+                    // Don't add if already in freshModules (by name or socsciId)
+                    const alreadyHas = freshModules.find(m =>
+                        m.name.toLowerCase() === cleanName.toLowerCase() || m.socsciId === course.id
+                    );
+                    if (!alreadyHas) {
+                        freshModules.push({
+                            id: `mod-${course.id}`,
+                            name: cleanName,
+                            code: course.shortname || '',
+                            type: 'Year Module',
+                            color: COLOR_ARRAY[freshModules.length % COLOR_ARRAY.length],
+                            socsciId: course.id,
+                        });
                     }
                 });
 
+                modules = freshModules;
                 saveData('jcd_modules', modules);
 
                 // 3. Fetch assignments for known modules
@@ -2001,9 +1994,71 @@
                             document.body.classList.toggle('light-mode');
                             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
                             break;
-                        case 'view-module':
-                            alert('Module detail view coming soon');
+                        case 'view-module': {
+                            const modId = el.dataset.moduleId;
+                            const mod = modules.find(m => m.id === modId);
+                            if (!mod) break;
+                            const modAssignments = assignments.filter(a => a.module === mod.name);
+                            const modAssessments = assessments.filter(a => a.module === mod.name);
+                            const modNotes = notes.filter(n => n.module === mod.name);
+                            const modClasses = timetable.filter(c => c.module === mod.name);
+                            openModal(`
+                                <button class="modal-close" data-action="close-modal">✕</button>
+                                <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+                                    <div style="width:52px;height:52px;border-radius:14px;background:${mod.color};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📚</div>
+                                    <div>
+                                        <div style="font-size:22px;font-weight:700;">${mod.name}</div>
+                                        <div style="color:var(--text-secondary);font-size:14px;">${mod.code} · ${mod.type}</div>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+                                    <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
+                                        <div style="font-size:24px;font-weight:700;">${modAssignments.length}</div>
+                                        <div style="font-size:12px;color:var(--text-secondary);">Assignments</div>
+                                    </div>
+                                    <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
+                                        <div style="font-size:24px;font-weight:700;">${modAssessments.length}</div>
+                                        <div style="font-size:12px;color:var(--text-secondary);">Assessments</div>
+                                    </div>
+                                    <div style="background:var(--surface);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;">
+                                        <div style="font-size:24px;font-weight:700;">${modNotes.length}</div>
+                                        <div style="font-size:12px;color:var(--text-secondary);">Notes</div>
+                                    </div>
+                                </div>
+                                ${modClasses.length > 0 ? `
+                                <div style="margin-bottom:20px;">
+                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Classes</div>
+                                    ${modClasses.map(c => `
+                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
+                                            <span style="font-weight:600;">${c.day} ${c.time}</span>
+                                            <span style="color:var(--text-secondary);">${c.type}${c.venue ? ' · ' + c.venue : ''}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>` : ''}
+                                ${modAssessments.length > 0 ? `
+                                <div style="margin-bottom:20px;">
+                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assessments</div>
+                                    ${modAssessments.map(a => `
+                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
+                                            <span style="font-weight:600;">${a.name}</span>
+                                            <span style="color:var(--text-secondary);">${formatDate(a.date)}${a.weight ? ' · ' + a.weight + '%' : ''}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>` : ''}
+                                ${modAssignments.length > 0 ? `
+                                <div style="margin-bottom:20px;">
+                                    <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-bottom:10px;">Assignments</div>
+                                    ${modAssignments.map(a => `
+                                        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;font-size:13px;">
+                                            <span style="font-weight:600;">${a.title}</span>
+                                            <span><span class="status-badge ${(a.status||'pending').toLowerCase()}">${a.status||'Pending'}</span></span>
+                                        </div>
+                                    `).join('')}
+                                </div>` : ''}
+                                ${mod.socsciId ? `<div style="margin-top:8px;"><a href="${settings.socsciUrl}/course/view.php?id=${mod.socsciId}" target="_blank" class="btn btn-secondary btn-small">Open in SocSciLearn ↗</a></div>` : ''}
+                            `);
                             break;
+                        }
                     }
                 });
             });
