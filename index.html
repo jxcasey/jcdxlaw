@@ -1,1667 +1,2059 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>JCDxLAW – Stellenbosch Law Dashboard</title>
-<link rel="manifest" href="/manifest.json"/>
-<meta name="theme-color" content="#6366f1"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          navy: { 900:'#060c1a', 800:'#0a1228', 700:'#0f1a38', 600:'#162248', 500:'#1e2d5e' }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JCDxLAW - Law Study Dashboard for Stellenbosch University">
+    <title>JCDxLAW - Law Study Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%237c5cfc' width='100' height='100'/><text x='50' y='65' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='system-ui'>⚖</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
-    }
-  }
-</script>
-<style>
-  :root { --sidebar-w: 240px; }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; transition: background .2s, color .2s; }
 
-  /* ─── DARK THEME ─── */
-  .dark body, body.dark { background: #060c1a; color: #e2e8f0; }
-  .dark .sidebar { background: #0a1228; border-color: #162248; }
-  .dark .card { background: #0f1a38; border: 1px solid #1e2d5e; }
-  .dark .card-inner { background: #162248; }
-  .dark .stat-card { background: #0f1a38; border: 1px solid #1e2d5e; }
-  .dark .nav-item:hover, .dark .nav-item.active { background: #162248; color: #818cf8; }
-  .dark .nav-item { color: #94a3b8; }
-  .dark input, .dark textarea, .dark select { background: #162248; border-color: #1e2d5e; color: #e2e8f0; }
-  .dark .modal-bg { background: #0f1a38; border: 1px solid #1e2d5e; }
-  .dark .table-row:hover { background: #162248; }
-  .dark .tag { background: #1e2d5e; color: #94a3b8; }
-  .dark .divider { border-color: #162248; }
-  .dark .pill { background: #1e2d5e; }
-  .dark .empty-state { color: #475569; }
-  .dark .section-header { color: #94a3b8; }
-  .dark .timetable-cell { background: #0f1a38; border-color: #162248; }
-  .dark .timetable-header { background: #0a1228; color: #64748b; }
-  .dark .search-input { background: #162248; border-color: #1e2d5e; color: #e2e8f0; }
-  .dark .note-card { background: #0f1a38; border: 1px solid #1e2d5e; }
-  .dark .sync-btn { background: #162248; border: 1px solid #1e2d5e; }
+        :root {
+            --primary: #7c5cfc;
+            --primary-dark: #6d4ae8;
+            --bg-dark: #0a0a12;
+            --surface: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --accent-1: #6366f1;
+            --accent-2: #3b82f6;
+            --accent-3: #10b981;
+            --accent-4: #f59e0b;
+            --accent-5: #ef4444;
+            --accent-6: #14b8a6;
+        }
 
-  /* ─── LIGHT THEME ─── */
-  html:not(.dark) body { background: #f1f5f9; color: #1e293b; }
-  html:not(.dark) .sidebar { background: #ffffff; border-color: #e2e8f0; }
-  html:not(.dark) .card { background: #ffffff; border: 1px solid #e2e8f0; }
-  html:not(.dark) .card-inner { background: #f8fafc; }
-  html:not(.dark) .stat-card { background: #ffffff; border: 1px solid #e2e8f0; }
-  html:not(.dark) .nav-item:hover, html:not(.dark) .nav-item.active { background: #f1f5f9; color: #6366f1; }
-  html:not(.dark) .nav-item { color: #64748b; }
-  html:not(.dark) input, html:not(.dark) textarea, html:not(.dark) select { background: #f8fafc; border-color: #e2e8f0; color: #1e293b; }
-  html:not(.dark) .modal-bg { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 20px 60px rgba(0,0,0,.15); }
-  html:not(.dark) .table-row:hover { background: #f8fafc; }
-  html:not(.dark) .tag { background: #f1f5f9; color: #64748b; }
-  html:not(.dark) .divider { border-color: #e2e8f0; }
-  html:not(.dark) .pill { background: #f1f5f9; }
-  html:not(.dark) .empty-state { color: #94a3b8; }
-  html:not(.dark) .section-header { color: #64748b; }
-  html:not(.dark) .timetable-cell { background: #ffffff; border-color: #e2e8f0; }
-  html:not(.dark) .timetable-header { background: #f8fafc; color: #94a3b8; }
-  html:not(.dark) .search-input { background: #f8fafc; border-color: #e2e8f0; color: #1e293b; }
-  html:not(.dark) .note-card { background: #ffffff; border: 1px solid #e2e8f0; }
-  html:not(.dark) .sync-btn { background: #f1f5f9; border: 1px solid #e2e8f0; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-  /* ─── LAYOUT ─── */
-  .app { display: flex; min-height: 100vh; }
-  .sidebar { width: var(--sidebar-w); min-height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; border-right: 1px solid; z-index: 50; transition: background .2s; }
-  .main { margin-left: var(--sidebar-w); flex: 1; padding: 32px; overflow-y: auto; min-height: 100vh; }
-  .page { display: none; }
-  .page.active { display: block; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, -webkit-system-font, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0f0f1a 100%);
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
 
-  /* ─── COMPONENTS ─── */
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all .15s; margin: 2px 8px; }
-  .stat-card { border-radius: 14px; padding: 20px 24px; transition: background .2s; }
-  .card { border-radius: 14px; padding: 20px; transition: all .2s; }
-  .card:hover { transform: translateY(-1px); }
-  .module-card { border-radius: 14px; padding: 20px; cursor: pointer; transition: all .15s; position: relative; overflow: hidden; }
-  .module-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; border: none; }
-  .btn-primary { background: #6366f1; color: white; }
-  .btn-primary:hover { background: #4f46e5; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .progress-bar { height: 4px; border-radius: 2px; background: #1e2d5e; overflow: hidden; }
-  html:not(.dark) .progress-bar { background: #e2e8f0; }
-  .progress-fill { height: 100%; border-radius: 2px; transition: width .4s; }
-  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .badge-year { background: rgba(99,102,241,.2); color: #818cf8; }
-  .badge-sem { background: rgba(16,185,129,.2); color: #34d399; }
-  .badge-due { background: rgba(239,68,68,.2); color: #f87171; }
-  .badge-done { background: rgba(16,185,129,.2); color: #34d399; }
-  .badge-pending { background: rgba(245,158,11,.2); color: #fbbf24; }
-  input, textarea, select { border: 1px solid; border-radius: 8px; padding: 8px 12px; font-size: 13px; outline: none; width: 100%; transition: border-color .15s; }
-  input:focus, textarea:focus, select:focus { border-color: #6366f1; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-  .modal-overlay.open { display: flex; }
-  .modal-bg { border-radius: 16px; padding: 28px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
-  .sync-btn { border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; }
-  .sync-btn:hover { border-color: #6366f1; color: #6366f1; }
-  .timetable-grid { display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 1px; }
-  .timetable-cell { padding: 6px 8px; min-height: 40px; font-size: 11px; border: 1px solid; }
-  .note-card { border-radius: 12px; padding: 16px; cursor: pointer; transition: all .15s; }
-  .note-card:hover { transform: translateY(-1px); }
-  .spin { animation: spin 1s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .fade-in { animation: fadeIn .2s ease; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-thumb { background: #2d3e6e; border-radius: 2px; }
-</style>
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 10, 18, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 24px 16px;
+            gap: 32px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .page-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 18, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .sidebar-spacer {
+            flex: 1;
+        }
+
+        .sidebar-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .glass-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .module-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-color, var(--primary));
+        }
+
+        .module-card:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(124, 92, 252, 0.15);
+        }
+
+        .module-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .module-card .name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .module-card .code {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .module-card .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(124, 92, 252, 0.2);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .module-card .stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .module-card .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 30px rgba(124, 92, 252, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: transparent;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--surface-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--bg-dark), 0 0 20px rgba(124, 92, 252, 0.4);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            border-bottom: 1px solid var(--border);
+        }
+
+        table thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table tbody td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .status-badge.upcoming {
+            background: rgba(248, 113, 113, 0.2);
+            color: #fecaca;
+        }
+
+        .status-badge.pending {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fed7aa;
+        }
+
+        .status-badge.submitted {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .status-badge.graded {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .status-badge.completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .tab-button {
+            padding: 12px 0;
+            border-bottom: 2px solid transparent;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-pill:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .content-with-sidebar {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .sidebar-item {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-item.upcoming {
+            border-left: 3px solid var(--primary);
+        }
+
+        .sidebar-item-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-item-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .time-slot {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-height: 60px;
+        }
+
+        .time-slot.header {
+            background: rgba(124, 92, 252, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .time-slot.has-class {
+            background: var(--surface-hover);
+            border-color: var(--accent-color, var(--primary));
+        }
+
+        .class-in-slot {
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: var(--accent-color, var(--primary));
+            text-align: center;
+        }
+
+        .note-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .note-card:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .note-card .module-tag {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .note-card .title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .note-card .preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .reference-type-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .reference-output {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .reference-output.output-tabs {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .reference-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .reference-tab-button {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .reference-tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .reference-tab-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .reference-tab-content.active {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-content {
+            animation: slideIn 0.3s ease;
+        }
+
+        @media (max-width: 1400px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .content-with-sidebar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timetable-grid {
+                grid-template-columns: 60px repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                position: absolute;
+                height: 100vh;
+                z-index: 100;
+                left: -280px;
+                transition: left 0.3s ease;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .main-content {
+                width: 100%;
+            }
+            .page-header {
+                padding: 16px 20px;
+            }
+            .page-content {
+                padding: 20px;
+            }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .timetable-grid {
+                grid-template-columns: 50px repeat(2, 1fr);
+            }
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        body.light-mode {
+            --bg-dark: #f8f8fb;
+            --surface: rgba(0, 0, 0, 0.05);
+            --surface-hover: rgba(0, 0, 0, 0.08);
+            --border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1a1a2e;
+            --text-secondary: #666680;
+        }
+
+        body.light-mode .sidebar {
+            background: rgba(248, 248, 251, 0.4);
+            border-right-color: var(--border);
+        }
+    </style>
 </head>
-<body>
-<div class="app dark" id="app">
+<body class="dark-mode">
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">⚖</div>
+                <div class="logo-text">JCDxLAW</div>
+            </div>
 
-<!-- ═══════════════════════════════════════════════════ SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div style="padding: 20px 16px 12px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-      <div style="width:36px;height:36px;background:#6366f1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚖</div>
-      <div>
-        <div style="font-size:16px;font-weight:800;letter-spacing:-.3px;">JCD<span style="color:#6366f1">×</span>LAW</div>
-        <div style="font-size:10px;color:#64748b;font-weight:500;">Stellenbosch University</div>
-      </div>
-    </div>
-  </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Navigation</div>
+                <div class="nav-item active" data-page="dashboard">📊 Dashboard</div>
+                <div class="nav-item" data-page="modules">📚 Modules</div>
+                <div class="nav-item" data-page="assessments">📝 Assessments</div>
+                <div class="nav-item" data-page="assignments">✍️ Assignments</div>
+                <div class="nav-item" data-page="timetable">🕐 Timetable</div>
+                <div class="nav-item" data-page="notes">📖 Notes</div>
+            </div>
 
-  <div style="padding: 4px 8px 8px;">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.08em;padding:8px 8px 4px;" class="section-header">NAVIGATION</div>
-    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </div>
-    <div class="nav-item" data-page="modules" onclick="navigate('modules',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Modules
-    </div>
-    <div class="nav-item" data-page="assignments" onclick="navigate('assignments',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Assignments
-    </div>
-    <div class="nav-item" data-page="timetable" onclick="navigate('timetable',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Timetable
-    </div>
-    <div class="nav-item" data-page="notes" onclick="navigate('notes',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
-      Notes
-    </div>
-    <div style="font-size:10px;font-weight:700;letter-spacing:.08em;padding:16px 8px 4px;" class="section-header">TOOLS</div>
-    <div class="nav-item" data-page="referencing" onclick="navigate('referencing',this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Referencing
-    </div>
-    <div class="nav-item" onclick="openSettings()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      SocSciLearn Sync
-    </div>
-  </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Tools</div>
+                <div class="nav-item" data-page="referencing">🔗 Referencing</div>
+                <div class="nav-item" data-action="sync">↻ SocSciLearn Sync</div>
+            </div>
 
-  <div style="margin-top:auto;padding:12px 16px;border-top:1px solid;border-bottom:1px solid;" class="divider">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.08em;margin-bottom:8px;" class="section-header">DATA</div>
-    <div style="display:flex;gap:6px;margin-bottom:12px;">
-      <button class="btn btn-sm tag" style="flex:1;justify-content:center;font-size:11px;" onclick="exportData()">Export</button>
-      <button class="btn btn-sm tag" style="flex:1;justify-content:center;font-size:11px;" onclick="importData()">Import</button>
-    </div>
-  </div>
-  <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-size:12px;font-weight:500;color:#64748b;">Dark mode</span>
-    <div onclick="toggleTheme()" style="width:44px;height:24px;border-radius:12px;background:#6366f1;cursor:pointer;position:relative;transition:background .2s;" id="themeToggle">
-      <div id="themeKnob" style="position:absolute;top:2px;left:2px;width:20px;height:20px;background:white;border-radius:50%;transition:transform .2s;"></div>
-    </div>
-  </div>
-</aside>
+            <div class="sidebar-spacer"></div>
 
-<!-- ═══════════════════════════════════════════════════ MAIN -->
-<main class="main">
-
-<!-- ──────────────── DASHBOARD PAGE ──────────────── -->
-<div class="page active fade-in" id="page-dashboard">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-    <div>
-      <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Dashboard</h1>
-      <div style="font-size:13px;color:#64748b;" id="todayDate"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <button class="btn tag btn-sm" onclick="syncCalendar(false)" title="Sync Apple Calendar">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Sync Calendar
-      </button>
-    </div>
-      <button class="btn btn-primary" onclick="syncSocSciLearn()" id="syncBtnMain">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Sync SocSciLearn
-      </button>
-    </div>
-  </div>
-  <!-- Calendar sync status bar -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding:8px 14px;border-radius:8px;" class="card-inner">
-    <div id="calSyncStatus" style="font-size:11px;color:#64748b;">Connecting to Apple Calendar...</div>
-    <div style="font-size:11px;color:#64748b;">Auto-syncs every 5 min · <span style="color:#6366f1;cursor:pointer;" onclick="navigate('assignments')">View all tasks →</span></div>
-  </div>
-
-  <!-- Stats row -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;">
-    <div class="stat-card" style="border-radius:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#6366f1;">ACTIVE MODULES</span>
-        <div style="width:32px;height:32px;background:rgba(99,102,241,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;">📚</div>
-      </div>
-      <div style="font-size:36px;font-weight:800;" id="statModules">6</div>
-    </div>
-    <div class="stat-card" style="border-radius:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#f59e0b;">PENDING TASKS</span>
-        <div style="width:32px;height:32px;background:rgba(245,158,11,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;">📋</div>
-      </div>
-      <div style="font-size:36px;font-weight:800;" id="statPending">0</div>
-    </div>
-    <div class="stat-card" style="border-radius:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#10b981;">COMPLETED</span>
-        <div style="width:32px;height:32px;background:rgba(16,185,129,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;">✅</div>
-      </div>
-      <div style="font-size:36px;font-weight:800;" id="statCompleted">0</div>
-    </div>
-    <div class="stat-card" style="border-radius:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#f87171;">TODAY'S CLASSES</span>
-        <div style="width:32px;height:32px;background:rgba(248,113,113,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;">🎓</div>
-      </div>
-      <div style="font-size:36px;font-weight:800;" id="statClasses">0</div>
-    </div>
-  </div>
-
-  <!-- Modules + Sidebar -->
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;">
-    <div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <span style="font-size:13px;font-weight:700;letter-spacing:.05em;" class="section-header">CURRENT MODULES</span>
-        <span style="font-size:12px;color:#6366f1;cursor:pointer;font-weight:600;" onclick="navigate('modules')">View All</span>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;" id="dashModuleGrid"></div>
-    </div>
-    <div>
-      <div style="margin-bottom:24px;">
-        <div style="font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:14px;" class="section-header">UPCOMING DEADLINES</div>
-        <div class="card" style="min-height:120px;" id="upcomingDeadlines">
-          <div class="empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;gap:8px;text-align:center;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-            <div style="font-size:13px;font-weight:500;">No pending deadlines</div>
-            <div style="font-size:11px;opacity:.7;">Add assignments to track them here</div>
-          </div>
+            <div class="sidebar-bottom">
+                <button class="btn btn-secondary btn-small" data-action="export">⬇️ Export</button>
+                <button class="btn btn-secondary btn-small" data-action="import">⬆️ Import</button>
+                <div class="theme-toggle" data-action="theme">🌙</div>
+            </div>
         </div>
-      </div>
-      <div style="margin-bottom:24px;">
-        <div style="font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:14px;" class="section-header">TODAY'S SCHEDULE</div>
-        <div class="card" style="min-height:100px;" id="todaySchedule">
-          <div class="empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;gap:8px;text-align:center;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <div style="font-size:13px;font-weight:500;">No classes today</div>
-            <div style="font-size:11px;opacity:.7;">Syncs from Apple Calendar automatically</div>
-          </div>
+
+        <div class="main-content">
+            <div id="page-header"></div>
+            <div id="page-content" class="page-content"></div>
         </div>
-      </div>
+    </div>
 
-      <!-- Legal Skills Activity -->
-      <div>
-        <div style="font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:14px;" class="section-header">LEGAL SKILLS ACTIVITY</div>
-        <div class="card" style="min-height:80px;" id="skillActivityLog">
-          <div class="empty-state" style="font-size:12px;text-align:center;padding:16px;line-height:1.6;">
-            Run <strong>deadlines</strong>, <strong>study-brief</strong>, or<br><strong>tutorial-prep</strong> skills to see activity here.
-          </div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal" id="modal-content">
+            <button class="modal-close" data-action="close-modal">✕</button>
         </div>
-      </div>
     </div>
-  </div>
-</div>
 
-<!-- ──────────────── MODULES PAGE ──────────────── -->
-<div class="page fade-in" id="page-modules">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-    <div>
-      <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Modules</h1>
-      <div style="font-size:13px;color:#64748b;">Your enrolled modules for 2026</div>
-    </div>
-    <button class="btn btn-primary" onclick="openAddModule()">+ Add Module</button>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;" id="fullModuleGrid"></div>
-</div>
-
-<!-- ──────────────── MODULE DETAIL PAGE ──────────────── -->
-<div class="page fade-in" id="page-module-detail">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
-    <button class="btn tag" onclick="navigate('modules')" style="padding:8px 12px;">← Back</button>
-    <div id="moduleDetailHeader" style="flex:1;"></div>
-  </div>
-
-  <!-- Stats -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;" id="moduleStatBoxes"></div>
-
-  <!-- Tabs -->
-  <div style="display:flex;gap:12px;margin-bottom:20px;border-bottom:1px solid;" class="divider">
-    <button class="btn btn-sm" id="tab-assignments" style="padding:10px 16px;border:none;border-bottom:3px solid #6366f1;color:#6366f1;background:none;border-radius:0;" onclick="switchModuleTab('assignments',this)">Assignments</button>
-    <button class="btn btn-sm" id="tab-notes" style="padding:10px 16px;border:none;border-bottom:3px solid transparent;color:#64748b;background:none;border-radius:0;cursor:pointer;" onclick="switchModuleTab('notes',this)">Notes</button>
-    <button class="btn btn-sm" id="tab-info" style="padding:10px 16px;border:none;border-bottom:3px solid transparent;color:#64748b;background:none;border-radius:0;cursor:pointer;" onclick="switchModuleTab('info',this)">Info</button>
-  </div>
-
-  <!-- Assignments Tab -->
-  <div id="moduleAssignmentsTab">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;font-size:14px;font-weight:700;">Assignments</h3>
-      <button class="btn btn-primary btn-sm" onclick="openAddAssignmentForModule()">+ Add Assignment</button>
-    </div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table style="width:100%;border-collapse:collapse;" id="moduleAssignTable">
-        <thead>
-          <tr style="font-size:11px;font-weight:700;letter-spacing:.06em;" class="section-header">
-            <th style="padding:14px 20px;text-align:left;">ASSIGNMENT</th>
-            <th style="padding:14px 20px;text-align:left;">TYPE</th>
-            <th style="padding:14px 20px;text-align:left;">DUE DATE</th>
-            <th style="padding:14px 20px;text-align:left;">STATUS</th>
-            <th style="padding:14px 20px;text-align:left;">MARKS</th>
-          </tr>
-        </thead>
-        <tbody id="moduleAssignBody">
-          <tr><td colspan="5" style="padding:20px;text-align:center;" class="empty-state">No assignments for this module</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Notes Tab -->
-  <div id="moduleNotesTab" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;font-size:14px;font-weight:700;">Notes</h3>
-      <button class="btn btn-primary btn-sm" onclick="openAddNoteForModule()">+ New Note</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" id="moduleNotesGrid">
-      <div style="grid-column:1/-1;padding:40px;text-align:center;" class="empty-state">No notes for this module</div>
-    </div>
-  </div>
-
-  <!-- Info Tab -->
-  <div id="moduleInfoTab" style="display:none;">
-    <div class="card">
-      <div style="margin-bottom:20px;">
-        <div style="font-size:12px;font-weight:600;" class="section-header">SEMESTER</div>
-        <div style="font-size:14px;margin-top:4px;" id="moduleInfoSemester">—</div>
-      </div>
-      <div style="margin-bottom:20px;">
-        <div style="font-size:12px;font-weight:600;" class="section-header">MODULE CODE</div>
-        <div style="font-size:14px;margin-top:4px;" id="moduleInfoCode">—</div>
-      </div>
-      <div style="margin-bottom:20px;">
-        <div style="font-size:12px;font-weight:600;" class="section-header">PROGRESS</div>
-        <div style="margin-top:8px;">
-          <input type="range" min="0" max="100" style="width:100%;accent-color:#6366f1;" id="moduleInfoProgress" oninput="updateModuleProgress(this.value)">
-          <div style="font-size:12px;color:#64748b;margin-top:4px;" id="moduleProgressValue">0%</div>
-        </div>
-      </div>
-      <div style="margin-bottom:20px;">
-        <div style="font-size:12px;font-weight:600;margin-bottom:10px;" class="section-header">WEEKLY SCHEDULE</div>
-        <div id="moduleScheduleSlots"></div>
-      </div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="openModuleOnSocSciLearn()">View on SocSciLearn</button>
-    </div>
-  </div>
-</div>
-
-<!-- ──────────────── ASSIGNMENTS PAGE ──────────────── -->
-<div class="page fade-in" id="page-assignments">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-    <div>
-      <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Assignments</h1>
-      <div style="font-size:13px;color:#64748b;" id="assignmentCount">0 tasks</div>
-    </div>
-    <button class="btn btn-primary" onclick="openAddAssignment()">+ Add Assignment</button>
-  </div>
-
-  <div style="display:flex;gap:8px;margin-bottom:20px;" id="assignFilter">
-    <button class="btn btn-sm" style="background:#6366f1;color:white;" onclick="filterAssign('all',this)">All</button>
-    <button class="btn btn-sm tag" onclick="filterAssign('pending',this)">Pending</button>
-    <button class="btn btn-sm tag" onclick="filterAssign('submitted',this)">Submitted</button>
-    <button class="btn btn-sm tag" onclick="filterAssign('graded',this)">Graded</button>
-  </div>
-
-  <div class="card" style="padding:0;overflow:hidden;" id="assignTable">
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="font-size:11px;font-weight:700;letter-spacing:.06em;" class="section-header">
-          <th style="padding:14px 20px;text-align:left;">ASSIGNMENT</th>
-          <th style="padding:14px 20px;text-align:left;">MODULE</th>
-          <th style="padding:14px 20px;text-align:left;">TYPE</th>
-          <th style="padding:14px 20px;text-align:left;">DUE DATE</th>
-          <th style="padding:14px 20px;text-align:left;">STATUS</th>
-          <th style="padding:14px 20px;text-align:left;">MARKS</th>
-          <th style="padding:14px 20px;text-align:left;"></th>
-        </tr>
-      </thead>
-      <tbody id="assignBody">
-        <tr>
-          <td colspan="7" style="padding:40px;text-align:center;" class="empty-state">
-            <div style="font-size:14px;font-weight:500;margin-bottom:4px;">No assignments yet</div>
-            <div style="font-size:12px;">Click "+ Add Assignment" or sync with SocSciLearn</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ──────────────── TIMETABLE PAGE ──────────────── -->
-<div class="page fade-in" id="page-timetable">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-    <div>
-      <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Timetable</h1>
-      <div style="font-size:13px;color:#64748b;">Semester 1 · 2026</div>
-    </div>
-    <button class="btn btn-primary" onclick="openAddClass()">+ Add Class</button>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden;">
-    <div id="timetableGrid"></div>
-  </div>
-</div>
-
-<!-- ──────────────── NOTES PAGE ──────────────── -->
-<div class="page fade-in" id="page-notes">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-    <div>
-      <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Notes</h1>
-      <div style="font-size:13px;color:#64748b;" id="notesCount">0 notes</div>
-    </div>
-    <button class="btn btn-primary" onclick="openAddNote()">+ New Note</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;" id="notesModuleFilter"></div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" id="notesGrid">
-    <div style="grid-column:1/-1;padding:40px;text-align:center;" class="empty-state">
-      <div style="font-size:14px;font-weight:500;margin-bottom:4px;">No notes yet</div>
-      <div style="font-size:12px;">Click "+ New Note" to start capturing your study notes</div>
-    </div>
-  </div>
-</div>
-
-<!-- ──────────────── REFERENCING PAGE ──────────────── -->
-<div class="page fade-in" id="page-referencing">
-  <div style="margin-bottom:28px;">
-    <h1 style="font-size:26px;font-weight:800;margin:0 0 4px;">Referencing</h1>
-    <div style="font-size:13px;color:#64748b;">SU Faculty of Law Citation Guide 2026</div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-    <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin:0 0 16px;">Generate Citation</h3>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;" class="section-header">SOURCE TYPE</label>
-        <select id="refType" onchange="renderRefForm()">
-          <option value="case">Case Law</option>
-          <option value="legislation">Legislation</option>
-          <option value="book">Book</option>
-          <option value="journal">Journal Article</option>
-          <option value="chapter">Chapter in Edited Collection</option>
-          <option value="internet">Internet Source</option>
-        </select>
-      </div>
-      <div id="refForm"></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px;" onclick="generateCitation()">Generate Citation</button>
-    </div>
-    <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin:0 0 16px;">Output</h3>
-      <div id="refOutput" class="empty-state" style="font-size:13px;">Fill in the form and click Generate →</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:24px;">
-    <h3 style="font-size:14px;font-weight:700;margin:0 0 16px;">Citation Quick Reference</h3>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;font-size:12px;">
-      <div>
-        <div style="font-weight:700;color:#6366f1;margin-bottom:6px;">Case Law (footnote)</div>
-        <div style="opacity:.8;line-height:1.7;">Author v Respondent [Year] Court Volume Reporter StartPage<br><em>eg: Minister of Home Affairs v NICRO 2005 (3) SA 280 (CC)</em></div>
-      </div>
-      <div>
-        <div style="font-weight:700;color:#10b981;margin-bottom:6px;">Legislation (footnote)</div>
-        <div style="opacity:.8;line-height:1.7;">Short Title Year (Act No. X of Year) s X<br><em>eg: Constitution of the Republic of South Africa, 1996 s 9</em></div>
-      </div>
-      <div>
-        <div style="font-weight:700;color:#f59e0b;margin-bottom:6px;">Book (footnote)</div>
-        <div style="opacity:.8;line-height:1.7;">Initials Surname Title (Year) PageNo<br><em>eg: T Honoré The South African Law of Trusts 5 ed (1992) 45</em></div>
-      </div>
-      <div>
-        <div style="font-weight:700;color:#f87171;margin-bottom:6px;">Journal Article (footnote)</div>
-        <div style="opacity:.8;line-height:1.7;">Initials Surname 'Title' (Year) Volume Journal StartPage PageNo<br><em>eg: AJ van der Walt 'Property Rights' (2008) 24 SAJHR 28 30</em></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-</main>
-</div><!-- end .app -->
-
-<!-- ═══════════════════════════════════════════════════ MODALS -->
-
-<!-- Add Assignment Modal -->
-<div class="modal-overlay" id="modalAssign">
-  <div class="modal-bg">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;">Add Assignment</h3>
-      <button onclick="closeModal('modalAssign')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#64748b;">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TITLE</label><input id="aTitle" placeholder="Assignment title"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">MODULE</label>
-        <select id="aModule"></select>
-      </div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TYPE</label>
-        <select id="aType"><option>Essay</option><option>MCQ Test</option><option>Research Paper</option><option>Oral</option><option>Tutorial</option><option>Exam</option><option>Other</option></select>
-      </div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">DUE DATE</label><input type="date" id="aDue"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TOTAL MARKS</label><input type="number" id="aMarks" placeholder="e.g. 100"/></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="saveAssignment()">Save Assignment</button>
-  </div>
-</div>
-
-<!-- Add Module Modal -->
-<div class="modal-overlay" id="modalModule">
-  <div class="modal-bg">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;">Add Module</h3>
-      <button onclick="closeModal('modalModule')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#64748b;">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">MODULE NAME</label><input id="mName" placeholder="e.g. Property Law"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">MODULE CODE</label><input id="mCode" placeholder="e.g. 278"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TYPE</label>
-        <select id="mType"><option>Year Module</option><option>Semester 1</option><option>Semester 2</option></select>
-      </div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">COLOUR</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="colorPicker">
-          <div class="color-dot" data-color="#6366f1" style="width:28px;height:28px;background:#6366f1;border-radius:50%;cursor:pointer;outline:3px solid transparent;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#3b82f6" style="width:28px;height:28px;background:#3b82f6;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#10b981" style="width:28px;height:28px;background:#10b981;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#f59e0b" style="width:28px;height:28px;background:#f59e0b;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#ef4444" style="width:28px;height:28px;background:#ef4444;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#14b8a6" style="width:28px;height:28px;background:#14b8a6;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#a855f7" style="width:28px;height:28px;background:#a855f7;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-          <div class="color-dot" data-color="#ec4899" style="width:28px;height:28px;background:#ec4899;border-radius:50%;cursor:pointer;" onclick="selectColor(this)"></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="saveModule()">Save Module</button>
-  </div>
-</div>
-
-<!-- Add Class Modal -->
-<div class="modal-overlay" id="modalClass">
-  <div class="modal-bg">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;">Add Class</h3>
-      <button onclick="closeModal('modalClass')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#64748b;">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">MODULE</label>
-        <select id="cModule"></select></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">DAY</label>
-          <select id="cDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TIME</label><input type="time" id="cTime" value="08:00"/></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">DURATION (min)</label><input type="number" id="cDuration" value="60"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">VENUE</label><input id="cVenue" placeholder="e.g. Rm 103"/></div>
-      </div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">CLASS TYPE</label>
-        <select id="cType"><option>Lecture</option><option>Tutorial</option><option>Seminar</option><option>Practical</option></select></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="saveClass()">Save Class</button>
-  </div>
-</div>
-
-<!-- Add Note Modal -->
-<div class="modal-overlay" id="modalNote">
-  <div class="modal-bg" style="max-width:640px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;" id="noteModalTitle">New Note</h3>
-      <button onclick="closeModal('modalNote')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#64748b;">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">TITLE</label><input id="nTitle" placeholder="Note title"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">MODULE</label><select id="nModule"></select></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">CONTENT</label>
-        <textarea id="nContent" rows="8" placeholder="Write your notes here..." style="resize:vertical;line-height:1.6;"></textarea></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="saveNote()">Save Note</button>
-  </div>
-</div>
-
-<!-- Settings / SocSciLearn Modal -->
-<div class="modal-overlay" id="modalSettings">
-  <div class="modal-bg">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;">SocSciLearn Sync</h3>
-      <button onclick="closeModal('modalSettings')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#64748b;">×</button>
-    </div>
-    <div style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#a5b4fc;line-height:1.6;">
-      Get your token: <strong>SocSciLearn → Profile → Security Keys → Moodle mobile web service token</strong>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">SOCSCILEARN URL</label>
-        <input id="sUrl" placeholder="https://socscilearn.sun.ac.za" value="https://socscilearn.sun.ac.za"/></div>
-      <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:5px;" class="section-header">WEB SERVICE TOKEN</label>
-        <input type="password" id="sToken" placeholder="Paste your token here"/></div>
-    </div>
-    <div style="border-top:1px solid;padding-top:16px;margin-top:16px;" class="divider">
-      <div style="font-size:12px;font-weight:700;margin-bottom:4px;">CROSS-DEVICE SYNC (GitHub Gist)</div>
-      <div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5;">Syncs your data to GitHub so your dashboard works on any device. <a href="https://github.com/settings/tokens/new?scopes=gist&description=JCDxLAW" target="_blank" style="color:#818cf8;">Create a PAT here</a> (tick "gist" scope). <a href="https://gist.github.com" target="_blank" style="color:#818cf8;">Create a Gist here</a> and copy its ID from the URL.</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px;" class="section-header">GITHUB GIST ID</label>
-          <input id="sGistId" placeholder="e.g. abc123def456..." /></div>
-        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px;" class="section-header">GITHUB PERSONAL ACCESS TOKEN</label>
-          <input type="password" id="sGithubToken" placeholder="ghp_..."/></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveSettings()">Save & Sync Now</button>
-      <button class="btn tag" style="padding:8px 16px;" onclick="closeModal('modalSettings')">Cancel</button>
-    </div>
-    <div id="syncStatus" style="margin-top:12px;font-size:12px;text-align:center;"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════ SCRIPTS -->
-<script>
-// ─── GITHUB PAGES COMPATIBILITY ──────────────────────────────
-const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-// ─── DATA ────────────────────────────────────────────────────
-const DEFAULT_MODULES = [
-  { id:1, name:'Foundations of Law',           code:'178', type:'Year Module', color:'#6366f1', progress:0 },
-  { id:2, name:'Property Law',                 code:'278', type:'Year Module', color:'#3b82f6', progress:0 },
-  { id:3, name:'Intro to Constitutional Law',  code:'178', type:'Year Module', color:'#10b981', progress:0 },
-  { id:4, name:'Family Law',                   code:'214', type:'Semester 1',  color:'#f59e0b', progress:0 },
-  { id:5, name:'Constitutional Law',           code:'214', type:'Semester 1',  color:'#ef4444', progress:0 },
-  { id:6, name:'Legal Ethics',                 code:'214', type:'Semester 1',  color:'#14b8a6', progress:0 },
-];
-
-// ─── TIMETABLE — imported from University.ics ─────────────────
-// Parsed from Josh's Apple Calendar export. All events are FREQ=WEEKLY
-// with no end date (active for full Semester 1 2026).
-const DEFAULT_TIMETABLE = [
-  // ── MONDAY ──────────────────────────────────────────────────
-  { id:101, moduleId:1, day:'Monday',    time:'09:00', duration:60, venue:'VDS 1024',   type:'Lecture'  },
-  { id:102, moduleId:1, day:'Monday',    time:'14:00', duration:60, venue:'OMB 1031',   type:'Tutorial' },
-  // ── TUESDAY ─────────────────────────────────────────────────
-  { id:201, moduleId:4, day:'Tuesday',   time:'08:00', duration:60, venue:'Krotoa 1001',type:'Lecture'  },
-  { id:202, moduleId:6, day:'Tuesday',   time:'09:00', duration:60, venue:'Krotoa 3001',type:'Lecture'  },
-  // ── WEDNESDAY ───────────────────────────────────────────────
-  { id:301, moduleId:6, day:'Wednesday', time:'08:00', duration:60, venue:'',           type:'Tutorial' },
-  { id:302, moduleId:6, day:'Wednesday', time:'11:00', duration:60, venue:'Krotoa 3001',type:'Lecture'  },
-  { id:303, moduleId:1, day:'Wednesday', time:'12:00', duration:60, venue:'VDS 1024',   type:'Lecture'  },
-  { id:304, moduleId:4, day:'Wednesday', time:'15:00', duration:60, venue:'Krotoa 1001',type:'Lecture'  },
-  { id:305, moduleId:5, day:'Wednesday', time:'16:00', duration:60, venue:'Krotoa 1001',type:'Lecture'  },
-  // ── THURSDAY ────────────────────────────────────────────────
-  { id:401, moduleId:1, day:'Thursday',  time:'08:00', duration:60, venue:'VDS 1024',   type:'Lecture'  },
-  { id:402, moduleId:3, day:'Thursday',  time:'09:00', duration:60, venue:'Krotoa 1001',type:'Lecture'  },
-  { id:403, moduleId:2, day:'Thursday',  time:'14:00', duration:60, venue:'VDS 3124',   type:'Lecture'  },
-  { id:404, moduleId:5, day:'Thursday',  time:'15:00', duration:60, venue:'Krotoa 1001',type:'Lecture'  },
-  // ── FRIDAY ──────────────────────────────────────────────────
-  { id:501, moduleId:3, day:'Friday',    time:'08:00', duration:60, venue:'BA 230',     type:'Lecture'  },
-  { id:502, moduleId:2, day:'Friday',    time:'09:00', duration:60, venue:'JM 301',     type:'Lecture'  },
-];
-
-function load(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch(e) { return def; } }
-function save(key, val)  { localStorage.setItem(key, JSON.stringify(val)); }
-
-let modules     = load('jcd_modules', DEFAULT_MODULES);
-let assignments = load('jcd_assignments', []);
-// Always restore the default timetable if the stored one is empty
-// Version stamp forces reset to DEFAULT_TIMETABLE when timetable data changes
-const TIMETABLE_VER = '2026-03-15';
-let timetable = (()=>{
-  const stored = load('jcd_timetable', null);
-  if (stored && stored.length > 0 && load('jcd_timetable_ver','') === TIMETABLE_VER) return stored;
-  save('jcd_timetable_ver', TIMETABLE_VER);
-  return DEFAULT_TIMETABLE;
-})();
-let notes       = load('jcd_notes', []);
-let settings    = load('jcd_settings', { url:'https://socscilearn.sun.ac.za', token:'', gistId:'', githubToken:'' });
-let selectedColor = '#6366f1';
-let editingNoteId = null;
-let assignFilter = 'all';
-let notesModFilter = 'all';
-
-// ─── THEME ───────────────────────────────────────────────────
-const isDark = () => document.documentElement.classList.contains('dark');
-function toggleTheme() {
-  const app = document.getElementById('app');
-  const html = document.documentElement;
-  const knob = document.getElementById('themeKnob');
-  const tog  = document.getElementById('themeToggle');
-  const dark = app.classList.toggle('dark');
-  html.classList.toggle('dark', dark);
-  document.body.classList.toggle('dark', dark);
-  knob.style.transform = dark ? 'translateX(0)' : 'translateX(20px)';
-  tog.style.background = dark ? '#6366f1' : '#cbd5e1';
-  save('jcd_theme', dark ? 'dark' : 'light');
-}
-(function initTheme() {
-  const t = load('jcd_theme', 'dark');
-  const dark = t !== 'light';
-  document.getElementById('app').classList.toggle('dark', dark);
-  document.documentElement.classList.toggle('dark', dark);
-  document.body.classList.toggle('dark', dark);
-  const knob = document.getElementById('themeKnob');
-  const tog  = document.getElementById('themeToggle');
-  knob.style.transform = dark ? 'translateX(0)' : 'translateX(20px)';
-  tog.style.background = dark ? '#6366f1' : '#cbd5e1';
-})();
-
-// ─── NAVIGATION ──────────────────────────────────────────────
-function navigate(pageId, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-'+pageId).classList.add('active');
-  if (el) { el.classList.add('active'); }
-  else {
-    document.querySelector(`[data-page="${pageId}"]`)?.classList.add('active');
-  }
-  renderPage(pageId);
-}
-function renderPage(p) {
-  if (p==='dashboard')   renderDashboard();
-  if (p==='modules')     renderModules();
-  if (p==='assignments') renderAssignments();
-  if (p==='timetable')   renderTimetable();
-  if (p==='notes')       renderNotes();
-  if (p==='referencing') renderRefForm();
-  if (p==='module-detail') renderModuleDetail();
-}
-
-// ─── MODULE DETAIL ────────────────────────────────────────────
-let currentModuleId = null;
-
-function openModuleDetail(moduleId) {
-  currentModuleId = moduleId;
-  navigate('module-detail');
-}
-
-function renderModuleDetail() {
-  if (!currentModuleId) return;
-  const m = modules.find(x=>x.id===currentModuleId);
-  if (!m) return;
-
-  const mAssigns = assignments.filter(a=>a.moduleId===m.id);
-  const mNotes = notes.filter(n=>n.moduleId===m.id);
-  const mProgress = m.progress || 0;
-
-  // Header
-  const headerEl = document.getElementById('moduleDetailHeader');
-  headerEl.innerHTML = `
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:12px;height:12px;background:${m.color};border-radius:2px;"></div>
-      <div style="flex:1;">
-        <h1 style="margin:0;font-size:24px;font-weight:800;">${m.name}</h1>
-        <div style="font-size:13px;color:#64748b;">LAW ${m.code} · <span class="badge ${m.type==='Year Module'?'badge-year':'badge-sem'}">${m.type}</span></div>
-      </div>
-    </div>
-  `;
-
-  // Stats
-  const statsEl = document.getElementById('moduleStatBoxes');
-  const nextAssess = mAssigns.filter(a=>a.status==='pending').sort((a,b)=>new Date(a.due||0)-new Date(b.due||0))[0];
-  const daysTillAssess = nextAssess && nextAssess.due ? Math.ceil((new Date(nextAssess.due)-new Date())/(1000*60*60*24)) : 0;
-  statsEl.innerHTML = `
-    <div class="stat-card"><div style="font-size:12px;font-weight:700;color:#6366f1;margin-bottom:8px;">TOTAL TASKS</div><div style="font-size:28px;font-weight:800;">${mAssigns.length}</div></div>
-    <div class="stat-card"><div style="font-size:12px;font-weight:700;color:#10b981;margin-bottom:8px;">NOTES</div><div style="font-size:28px;font-weight:800;">${mNotes.length}</div></div>
-    <div class="stat-card"><div style="font-size:12px;font-weight:700;color:#f59e0b;margin-bottom:8px;">PROGRESS</div><div style="font-size:28px;font-weight:800;">${mProgress}%</div></div>
-    <div class="stat-card"><div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:8px;">DAYS TO NEXT</div><div style="font-size:28px;font-weight:800;">${daysTillAssess || '—'}</div></div>
-  `;
-
-  // Assignments tab
-  const assignBody = document.getElementById('moduleAssignBody');
-  if (mAssigns.length === 0) {
-    assignBody.innerHTML = `<tr><td colspan="5" style="padding:20px;text-align:center;" class="empty-state">No assignments</td></tr>`;
-  } else {
-    assignBody.innerHTML = mAssigns.sort((a,b)=>new Date(a.due||0)-new Date(b.due||0)).map(a => {
-      const due = a.due ? new Date(a.due).toLocaleDateString('en-ZA') : '—';
-      const badge = {pending:'badge-pending',submitted:'badge-done',graded:'badge-done'}[a.status]||'badge-pending';
-      return `<tr class="table-row" style="border-top:1px solid;">
-        <td style="padding:14px 20px;font-size:13px;font-weight:500;">${a.title}</td>
-        <td style="padding:14px 20px;"><span class="tag" style="font-size:11px;">${a.type}</span></td>
-        <td style="padding:14px 20px;font-size:12px;">${due}</td>
-        <td style="padding:14px 20px;">
-          <select class="badge ${badge}" style="border:none;padding:2px 6px;font-size:11px;font-weight:600;cursor:pointer;background:transparent;" onchange="updateAssignStatus(${a.id},this.value)">
-            <option value="pending" ${a.status==='pending'?'selected':''}>Pending</option>
-            <option value="submitted" ${a.status==='submitted'?'selected':''}>Submitted</option>
-            <option value="graded" ${a.status==='graded'?'selected':''}>Graded</option>
-          </select>
-        </td>
-        <td style="padding:14px 20px;font-size:12px;">${a.earnedMarks!=null?a.earnedMarks+'/'+a.marks : a.marks||'—'}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  // Notes tab
-  const notesGrid = document.getElementById('moduleNotesGrid');
-  if (mNotes.length === 0) {
-    notesGrid.innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;" class="empty-state">No notes for this module</div>`;
-  } else {
-    notesGrid.innerHTML = mNotes.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(n => {
-      const preview = n.content.slice(0,100)+(n.content.length>100?'...':'');
-      const date = new Date(n.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
-      return `<div class="note-card" onclick="openEditNote(${n.id})">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="font-size:11px;font-weight:600;color:${m.color};">${m.name}</div>
-          <div style="font-size:10px;color:#64748b;">${date}</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:6px;">${n.title}</div>
-        <div style="font-size:12px;line-height:1.5;color:#94a3b8;">${preview}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // Info tab
-  document.getElementById('moduleInfoSemester').textContent = m.type;
-  document.getElementById('moduleInfoCode').textContent = 'LAW ' + m.code;
-  document.getElementById('moduleInfoProgress').value = mProgress;
-  document.getElementById('moduleProgressValue').textContent = mProgress + '%';
-
-  // Weekly schedule for this module
-  const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-  const mSlots = timetable.filter(s=>s.moduleId===m.id).sort((a,b)=>
-    dayOrder.indexOf(a.day)-dayOrder.indexOf(b.day) || a.time.localeCompare(b.time));
-  const schedEl = document.getElementById('moduleScheduleSlots');
-  if (schedEl) {
-    schedEl.innerHTML = mSlots.length ? mSlots.map(s=>`
-      <div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid;" class="divider">
-        <div style="font-size:11px;font-weight:700;width:82px;color:#94a3b8;">${s.day}</div>
-        <div style="font-size:14px;font-weight:800;">${s.time}</div>
-        <div style="flex:1;font-size:12px;color:#64748b;">${s.venue||'—'}</div>
-        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${s.type==='Tutorial'?'rgba(16,185,129,.15)':'rgba(99,102,241,.15)'};color:${s.type==='Tutorial'?'#34d399':'#818cf8'}">${s.type}</span>
-      </div>`).join('') :
-      `<div style="font-size:13px;color:#64748b;padding:8px 0;">No scheduled classes found</div>`;
-  }
-
-  // Reset tabs to Assignments
-  switchModuleTab('assignments', document.getElementById('tab-assignments'));
-}
-
-function switchModuleTab(tab, el) {
-  document.querySelectorAll('[id^="tab-"]').forEach(b => {
-    b.style.borderColor = 'transparent';
-    b.style.color = '#64748b';
-  });
-  el.style.borderBottomColor = '#6366f1';
-  el.style.color = '#6366f1';
-
-  document.getElementById('moduleAssignmentsTab').style.display = 'none';
-  document.getElementById('moduleNotesTab').style.display = 'none';
-  document.getElementById('moduleInfoTab').style.display = 'none';
-
-  if (tab === 'assignments') document.getElementById('moduleAssignmentsTab').style.display = 'block';
-  if (tab === 'notes') document.getElementById('moduleNotesTab').style.display = 'block';
-  if (tab === 'info') document.getElementById('moduleInfoTab').style.display = 'block';
-}
-
-function openAddAssignmentForModule() {
-  populateModuleSelect('aModule');
-  document.getElementById('aModule').value = currentModuleId;
-  openModal('modalAssign');
-}
-
-function openAddNoteForModule() {
-  editingNoteId = null;
-  document.getElementById('noteModalTitle').textContent = 'New Note';
-  document.getElementById('nTitle').value = '';
-  document.getElementById('nContent').value = '';
-  populateModuleSelect('nModule');
-  document.getElementById('nModule').value = currentModuleId;
-  openModal('modalNote');
-}
-
-function updateModuleProgress(val) {
-  const m = modules.find(x=>x.id===currentModuleId);
-  if (m) {
-    m.progress = parseInt(val);
-    save('jcd_modules', modules);
-    document.getElementById('moduleProgressValue').textContent = val + '%';
-  }
-}
-
-function openModuleOnSocSciLearn() {
-  const m = modules.find(x=>x.id===currentModuleId);
-  if (m && settings.url) {
-    const url = settings.url + '/course/view.php?id=' + (m.socsciId || m.id);
-    window.open(url, '_blank');
-  }
-}
-
-// ─── DASHBOARD ───────────────────────────────────────────────
-function renderDashboard() {
-  const now = new Date();
-  document.getElementById('todayDate').textContent = now.toLocaleDateString('en-ZA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('statModules').textContent = modules.length;
-  const pending   = assignments.filter(a=>a.status==='pending').length;
-  const completed = assignments.filter(a=>a.status==='submitted'||a.status==='graded').length;
-  document.getElementById('statPending').textContent   = pending;
-  document.getElementById('statCompleted').textContent = completed;
-  const todayDay = now.toLocaleDateString('en-ZA',{weekday:'long'});
-  const todayClasses = timetable.filter(c=>c.day===todayDay).length;
-  document.getElementById('statClasses').textContent = todayClasses;
-
-  // Module grid (dash)
-  const grid = document.getElementById('dashModuleGrid');
-  grid.innerHTML = modules.map(m => `
-    <div class="module-card card" onclick="openModuleDetail(${m.id})" style="padding:18px 18px 18px 22px;">
-      <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:${m.color};border-radius:4px 0 0 4px;"></div>
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div>
-          <div style="font-size:13px;font-weight:700;line-height:1.3;">${m.name}</div>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;">${m.code}</div>
-        </div>
-        <span class="badge ${m.type==='Year Module'?'badge-year':'badge-sem'}">${m.type}</span>
-      </div>
-      <div style="font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between;" class="section-header">
-        <span>Progress</span><span>${m.progress}%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${m.progress}%;background:${m.color};"></div></div>
-    </div>
-  `).join('');
-
-  // Upcoming deadlines
-  const upcoming = assignments.filter(a=>a.status==='pending'&&a.due).sort((a,b)=>new Date(a.due)-new Date(b.due)).slice(0,5);
-  const dd = document.getElementById('upcomingDeadlines');
-  if (upcoming.length===0) {
-    dd.innerHTML = `<div class="empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;gap:8px;text-align:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><div style="font-size:13px;font-weight:500;">No pending deadlines</div><div style="font-size:11px;opacity:.7;">Add assignments to track them here</div></div>`;
-  } else {
-    dd.innerHTML = upcoming.map(a => {
-      const mod = modules.find(m=>m.id===a.moduleId)||{name:'Unknown',color:'#64748b'};
-      const due = new Date(a.due);
-      const diff = Math.ceil((due-new Date())/(1000*60*60*24));
-      const col = diff<=2?'#f87171':diff<=7?'#fbbf24':'#34d399';
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid;" class="divider">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:${mod.color};flex-shrink:0;"></div>
-          <div><div style="font-size:13px;font-weight:500;">${a.title}</div><div style="font-size:11px;color:#64748b;">${mod.name}</div></div>
-        </div>
-        <div style="font-size:11px;font-weight:700;color:${col};">${diff<=0?'Overdue':diff===1?'Tomorrow':'In '+diff+'d'}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // Today's schedule
-  const ts = document.getElementById('todaySchedule');
-  const todayClasses2 = timetable.filter(c=>c.day===todayDay).sort((a,b)=>a.time.localeCompare(b.time));
-  if (todayClasses2.length===0) {
-    ts.innerHTML = `<div class="empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;gap:8px;text-align:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div style="font-size:13px;font-weight:500;">No classes today</div><div style="font-size:11px;opacity:.7;">Add classes in the timetable</div></div>`;
-  } else {
-    ts.innerHTML = todayClasses2.map(c => {
-      const mod = modules.find(m=>m.id===c.moduleId)||{name:'Unknown',color:'#64748b'};
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid;" class="divider">
-        <div style="width:3px;height:36px;background:${mod.color};border-radius:2px;flex-shrink:0;"></div>
-        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${mod.name}</div><div style="font-size:11px;color:#64748b;">${c.type} · ${c.venue||'TBA'}</div></div>
-        <div style="font-size:12px;font-weight:700;color:#6366f1;">${c.time}</div>
-      </div>`;
-    }).join('');
-  }
-}
-
-// ─── MODULES ─────────────────────────────────────────────────
-function renderModules() {
-  const grid = document.getElementById('fullModuleGrid');
-  grid.innerHTML = modules.map(m => {
-    const mAssigns = assignments.filter(a=>a.moduleId===m.id);
-    const mNotes   = notes.filter(n=>n.moduleId===m.id);
-    return `
-    <div class="module-card card" style="padding:22px 22px 22px 26px;cursor:pointer;" onclick="openModuleDetail(${m.id});">
-      <div style="position:absolute;left:0;top:0;bottom:0;width:5px;background:${m.color};border-radius:5px 0 0 5px;"></div>
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
-        <div>
-          <div style="font-size:15px;font-weight:800;">${m.name}</div>
-          <div style="font-size:12px;color:#64748b;margin-top:2px;">LAW ${m.code}</div>
-        </div>
-        <span class="badge ${m.type==='Year Module'?'badge-year':'badge-sem'}">${m.type}</span>
-      </div>
-      <div style="display:flex;gap:16px;margin-bottom:14px;">
-        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:${m.color};">${mAssigns.length}</div><div style="font-size:10px;color:#64748b;">Tasks</div></div>
-        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:${m.color};">${mNotes.length}</div><div style="font-size:10px;color:#64748b;">Notes</div></div>
-        <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:${m.color};">${m.progress}%</div><div style="font-size:10px;color:#64748b;">Done</div></div>
-      </div>
-      <div style="font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between;" class="section-header">
-        <span>Progress</span><span>${m.progress}%</span>
-      </div>
-      <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:${m.progress}%;background:${m.color};"></div></div>
-      <input type="range" min="0" max="100" value="${m.progress}" style="width:100%;margin-top:10px;accent-color:${m.color};" oninput="updateProgress(${m.id},this.value)">
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="btn btn-sm" style="background:${m.color}20;color:${m.color};border:1px solid ${m.color}40;flex:1;justify-content:center;" onclick="event.stopPropagation();openModuleDetail(${m.id});setTimeout(()=>switchModuleTab('notes',document.getElementById('tab-notes')),30)">Notes</button>
-        <button class="btn btn-sm tag" style="flex:1;justify-content:center;" onclick="event.stopPropagation();openModuleDetail(${m.id})">Tasks</button>
-        <button class="btn btn-sm" style="background:#ef444420;color:#f87171;border:1px solid #ef444440;" onclick="deleteModule(${m.id})">✕</button>
-      </div>
-    </div>`;
-  }).join('') + `
-    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;gap:10px;cursor:pointer;border-style:dashed;opacity:.6;" onclick="openAddModule()">
-      <div style="font-size:32px;">+</div>
-      <div style="font-size:13px;font-weight:500;">Add Module</div>
-    </div>`;
-}
-
-function updateProgress(id, val) {
-  const m = modules.find(m=>m.id===id);
-  if(m) { m.progress=parseInt(val); save('jcd_modules',modules); }
-}
-function deleteModule(id) {
-  if(!confirm('Delete this module?')) return;
-  modules = modules.filter(m=>m.id!==id);
-  save('jcd_modules',modules);
-  renderModules();
-  renderDashboard();
-}
-
-// ─── ASSIGNMENTS ──────────────────────────────────────────────
-function renderAssignments() {
-  let filtered = assignFilter==='all' ? assignments : assignments.filter(a=>a.status===assignFilter);
-  document.getElementById('assignmentCount').textContent = `${filtered.length} task${filtered.length!==1?'s':''}`;
-  const body = document.getElementById('assignBody');
-  if (filtered.length===0) {
-    body.innerHTML = `<tr><td colspan="7" style="padding:40px;text-align:center;" class="empty-state"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">No assignments</div><div style="font-size:12px;">Click "+ Add Assignment" or sync with SocSciLearn</div></td></tr>`;
-    return;
-  }
-  body.innerHTML = filtered.sort((a,b)=>new Date(a.due||0)-new Date(b.due||0)).map(a => {
-    const mod = modules.find(m=>m.id===a.moduleId)||{name:'Unknown',color:'#64748b'};
-    const due = a.due ? new Date(a.due).toLocaleDateString('en-ZA') : '—';
-    const badge = {pending:'badge-pending',submitted:'badge-done',graded:'badge-done'}[a.status]||'badge-pending';
-    return `<tr class="table-row" style="border-top:1px solid;" onclick="">
-      <td style="padding:14px 20px;font-size:13px;font-weight:500;">${a.title}</td>
-      <td style="padding:14px 20px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:50%;background:${mod.color};"></div><span style="font-size:12px;">${mod.name}</span></div></td>
-      <td style="padding:14px 20px;"><span class="tag" style="font-size:11px;">${a.type}</span></td>
-      <td style="padding:14px 20px;font-size:12px;">${due}</td>
-      <td style="padding:14px 20px;">
-        <select class="badge ${badge}" style="border:none;padding:2px 6px;font-size:11px;font-weight:600;cursor:pointer;background:transparent;" onchange="updateAssignStatus(${a.id},this.value)">
-          <option value="pending" ${a.status==='pending'?'selected':''}>Pending</option>
-          <option value="submitted" ${a.status==='submitted'?'selected':''}>Submitted</option>
-          <option value="graded" ${a.status==='graded'?'selected':''}>Graded</option>
-        </select>
-      </td>
-      <td style="padding:14px 20px;font-size:12px;">${a.earnedMarks!=null?a.earnedMarks+'/'+a.marks : a.marks||'—'}</td>
-      <td style="padding:14px 20px;"><button onclick="deleteAssignment(${a.id})" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:14px;">✕</button></td>
-    </tr>`;
-  }).join('');
-}
-
-function filterAssign(f, el) {
-  assignFilter = f;
-  document.querySelectorAll('#assignFilter button').forEach(b=>{b.style.background='';b.style.color='';b.classList.remove('btn-primary');});
-  el.style.background='#6366f1'; el.style.color='white';
-  renderAssignments();
-}
-function updateAssignStatus(id, val) {
-  const a = assignments.find(a=>a.id===id);
-  if(a) { a.status=val; save('jcd_assignments',assignments); renderDashboard(); }
-}
-function deleteAssignment(id) {
-  assignments = assignments.filter(a=>a.id!==id);
-  save('jcd_assignments',assignments);
-  renderAssignments(); renderDashboard();
-}
-
-// ─── TIMETABLE ───────────────────────────────────────────────
-const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-const HOURS = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
-
-function renderTimetable() {
-  const grid = document.getElementById('timetableGrid');
-  let html = '';
-
-  // Calendar status bar
-  const calStatus = document.getElementById('calSyncStatus');
-  if (calendarData && calendarData.diagnostic) {
-    const diag = calendarData.diagnostic;
-    if (diag.permission_error) {
-      html += `<div style="padding:12px 16px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;margin-bottom:16px;font-size:12px;color:#fbbf24;">⚠ Calendar access denied — grant Terminal access in System Settings → Privacy → Calendars</div>`;
-    } else if (diag.files_found === 0) {
-      html += `<div style="padding:12px 16px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;margin-bottom:16px;font-size:12px;color:#fbbf24;">⚠ No calendar files found — your calendars may use a different path</div>`;
-    } else if (calendarData.total > 0) {
-      html += `<div style="padding:12px 16px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:8px;margin-bottom:16px;font-size:12px;color:#34d399;">✓ ${calendarData.total} events found in Apple Calendar</div>`;
-    }
-  }
-
-  // Timetable grid
-  html += `<div style="display:grid;grid-template-columns:64px repeat(5,1fr);">`;
-  html += `<div class="timetable-header" style="padding:10px 8px;font-size:10px;font-weight:700;border:1px solid;" class="section-header"></div>`;
-  DAYS.forEach(d => {
-    html += `<div class="timetable-header" style="padding:10px 8px;font-size:11px;font-weight:700;text-align:center;border:1px solid;">${d}</div>`;
-  });
-  HOURS.forEach(h => {
-    html += `<div class="timetable-cell" style="padding:6px;font-size:10px;font-weight:600;text-align:center;" class="section-header">${h}</div>`;
-    DAYS.forEach(d => {
-      const classes = timetable.filter(c=>c.day===d&&c.time===h);
-      if(classes.length>0) {
-        const c = classes[0];
-        const mod = modules.find(m=>m.id===c.moduleId)||{name:'?',color:'#64748b'};
-        html += `<div class="timetable-cell" style="background:${mod.color}22;border-left:3px solid ${mod.color};cursor:pointer;" onclick="deleteClass(${c.id})">
-          <div style="font-size:10px;font-weight:700;color:${mod.color};line-height:1.3;">${mod.name}</div>
-          <div style="font-size:9px;color:#64748b;">${c.type} ${c.venue?'· '+c.venue:''}</div>
-        </div>`;
-      } else {
-        html += `<div class="timetable-cell"></div>`;
-      }
-    });
-  });
-  html += '</div>';
-
-  // Calendar Events section
-  html += `<div style="margin-top:28px;"><div style="font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:16px;" class="section-header">CALENDAR EVENTS</div>`;
-  const allCalEvents = [...(calendarData.today||[]), ...(calendarData.upcoming||[])];
-  if (allCalEvents.length === 0) {
-    html += `<div style="padding:20px;text-align:center;" class="empty-state">No calendar events for the next 7 days</div>`;
-  } else {
-    html += `<div class="card" style="padding:0;overflow:hidden;"><div style="display:flex;flex-direction:column;">`;
-    allCalEvents.slice(0,14).forEach(ev => {
-      const dateObj = new Date(ev.date + 'T12:00:00');
-      const dateStr = dateObj.toLocaleDateString('en-ZA', {weekday:'short', month:'short', day:'numeric'});
-      const timeStr = ev.dtstart && ev.dtstart.includes('T') ? ev.dtstart.split('T')[1].slice(0,5) : '—';
-      html += `<div style="padding:12px 16px;border-bottom:1px solid;" class="divider">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:600;">${ev.summary}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">${dateStr} at ${timeStr}${ev.location ? ' · ' + ev.location : ''}</div>
-          </div>
-        </div>
-      </div>`;
-    });
-    html += `</div></div>`;
-  }
-  html += `</div>`;
-
-  grid.innerHTML = html;
-}
-
-function deleteClass(id) {
-  if(!confirm('Remove this class from your timetable?')) return;
-  timetable = timetable.filter(c=>c.id!==id);
-  save('jcd_timetable',timetable);
-  renderTimetable();
-  renderDashboard();
-}
-
-// ─── NOTES ───────────────────────────────────────────────────
-function renderNotes() {
-  const filterBar = document.getElementById('notesModuleFilter');
-  filterBar.innerHTML = `<button class="btn btn-sm ${notesModFilter==='all'?'btn-primary':'tag'}" onclick="filterNotes('all',this)">All</button>` +
-    modules.map(m=>`<button class="btn btn-sm ${notesModFilter===m.id?'btn-primary':'tag'}" style="${notesModFilter===m.id?'background:'+m.color:''}" onclick="filterNotes(${m.id},this)">${m.name.split(' ').slice(0,2).join(' ')}</button>`).join('');
-
-  const filtered = notesModFilter==='all' ? notes : notes.filter(n=>n.moduleId===notesModFilter);
-  document.getElementById('notesCount').textContent = `${filtered.length} note${filtered.length!==1?'s':''}`;
-  const grid = document.getElementById('notesGrid');
-  if (filtered.length===0) {
-    grid.innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;" class="empty-state"><div style="font-size:14px;font-weight:500;margin-bottom:4px;">No notes yet</div><div style="font-size:12px;">Click "+ New Note" to start capturing your study notes</div></div>`;
-    return;
-  }
-  grid.innerHTML = filtered.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(n => {
-    const mod = modules.find(m=>m.id===n.moduleId)||{name:'Unknown',color:'#64748b'};
-    const preview = n.content.slice(0,120)+(n.content.length>120?'...':'');
-    const date = new Date(n.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
-    return `<div class="note-card" onclick="openEditNote(${n.id})">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:${mod.color};flex-shrink:0;"></div>
-        <span style="font-size:11px;font-weight:600;color:${mod.color};">${mod.name}</span>
-        <span style="margin-left:auto;font-size:10px;color:#64748b;">${date}</span>
-      </div>
-      <div style="font-size:13px;font-weight:700;margin-bottom:6px;">${n.title}</div>
-      <div style="font-size:12px;line-height:1.5;color:#94a3b8;">${preview}</div>
-      <div style="display:flex;justify-content:flex-end;margin-top:10px;">
-        <button onclick="event.stopPropagation();deleteNote(${n.id})" style="background:none;border:none;cursor:pointer;font-size:12px;color:#64748b;">Delete</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function filterNotes(f, el) {
-  notesModFilter = f;
-  renderNotes();
-}
-
-// ─── REFERENCING ─────────────────────────────────────────────
-const REF_FIELDS = {
-  case:        [{id:'plaintiff',label:'Plaintiff / First party'},{id:'defendant',label:'Defendant / Second party'},{id:'year',label:'Year'},{id:'volume',label:'Volume'},{id:'reporter',label:'Reporter (eg BCLR, SA)'},{id:'page',label:'Start page'},{id:'court',label:'Court (eg CC, SCA, ECG)'},{id:'pinpoint',label:'Pinpoint page (optional)'}],
-  legislation: [{id:'title',label:'Short title'},{id:'year',label:'Year'},{id:'actno',label:'Act No.'},{id:'section',label:'Section(s)'}],
-  book:        [{id:'initials',label:'Author initials'},{id:'surname',label:'Author surname'},{id:'title',label:'Title'},{id:'edition',label:'Edition (eg 3)'},{id:'place',label:'Place'},{id:'publisher',label:'Publisher'},{id:'year',label:'Year'},{id:'page',label:'Page(s)'}],
-  journal:     [{id:'initials',label:'Author initials'},{id:'surname',label:'Author surname'},{id:'articletitle',label:'Article title'},{id:'year',label:'Year'},{id:'volume',label:'Volume'},{id:'journal',label:'Journal abbreviation'},{id:'startpage',label:'Start page'},{id:'pinpoint',label:'Pinpoint page'}],
-  chapter:     [{id:'initials',label:'Author initials'},{id:'surname',label:'Author surname'},{id:'chaptertitle',label:'Chapter title'},{id:'editorinit',label:'Editor initials'},{id:'editorsurn',label:'Editor surname'},{id:'booktitle',label:'Book title'},{id:'year',label:'Year'},{id:'page',label:'Page'}],
-  internet:    [{id:'author',label:'Author (or institution)'},{id:'title',label:'Page title'},{id:'url',label:'URL'},{id:'accessed',label:'Date accessed (eg 12 Jan 2026)'}],
-};
-
-function renderRefForm() {
-  const type = document.getElementById('refType').value;
-  const fields = REF_FIELDS[type]||[];
-  document.getElementById('refForm').innerHTML = fields.map(f=>
-    `<div style="margin-bottom:10px;"><label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px;" class="section-header">${f.label.toUpperCase()}</label><input id="rf_${f.id}" placeholder="${f.label}"/></div>`
-  ).join('');
-}
-
-function generateCitation() {
-  const type = document.getElementById('refType').value;
-  const v = id => (document.getElementById('rf_'+id)||{}).value||'';
-  let fn='', abr='', bib='';
-  if(type==='case') {
-    const pin = v('pinpoint')?` ${v('pinpoint')}`:'';
-    fn  = `<em>${v('plaintiff')} v ${v('defendant')}</em> ${v('year')} (${v('volume')}) ${v('reporter')} ${v('page')} (${v('court')})${pin}.`;
-    abr = `<em>${v('plaintiff')} v ${v('defendant')}</em> (note X) ${v('page')}${pin}.`;
-    bib = fn;
-  } else if(type==='legislation') {
-    fn  = `${v('title')} ${v('year')} (Act No ${v('actno')} of ${v('year')}) s ${v('section')}.`;
-    abr = `${v('title')} s ${v('section')}.`;
-    bib = fn;
-  } else if(type==='book') {
-    const ed = v('edition')? ` ${v('edition')} ed`:'';
-    fn  = `${v('initials')} ${v('surname')} <em>${v('title')}</em>${ed} (${v('year')}) ${v('page')}.`;
-    abr = `${v('surname')} (note X) ${v('page')}.`;
-    bib = `${v('surname')} ${v('initials')} <em>${v('title')}</em>${ed} (${v('publisher')}: ${v('place')}) ${v('year')}.`;
-  } else if(type==='journal') {
-    fn  = `${v('initials')} ${v('surname')} '${v('articletitle')}' (${v('year')}) ${v('volume')} ${v('journal')} ${v('startpage')} ${v('pinpoint')}.`;
-    abr = `${v('surname')} (note X) ${v('pinpoint')}.`;
-    bib = `${v('surname')} ${v('initials')} '${v('articletitle')}' (${v('year')}) ${v('volume')} <em>${v('journal')}</em> ${v('startpage')}.`;
-  } else if(type==='chapter') {
-    fn  = `${v('initials')} ${v('surname')} '${v('chaptertitle')}' in ${v('editorinit')} ${v('editorsurn')} (ed) <em>${v('booktitle')}</em> (${v('year')}) ${v('page')}.`;
-    abr = `${v('surname')} (note X) ${v('page')}.`;
-    bib = fn;
-  } else if(type==='internet') {
-    fn  = `${v('author')} '${v('title')}' available at ${v('url')} (accessed ${v('accessed')}).`;
-    abr = `${v('author')} (note X).`;
-    bib = fn;
-  }
-  document.getElementById('refOutput').innerHTML = `
-    <div style="margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:700;color:#6366f1;margin-bottom:6px;">FOOTNOTE (First reference)</div>
-      <div style="font-size:13px;line-height:1.7;padding:10px 12px;border-radius:8px;" class="card-inner">${fn||'<span class="empty-state">Fill in all fields first</span>'}</div>
-    </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:700;color:#10b981;margin-bottom:6px;">FOOTNOTE (Subsequent references)</div>
-      <div style="font-size:13px;line-height:1.7;padding:10px 12px;border-radius:8px;" class="card-inner">${abr}</div>
-    </div>
-    <div>
-      <div style="font-size:11px;font-weight:700;color:#f59e0b;margin-bottom:6px;">BIBLIOGRAPHY</div>
-      <div style="font-size:13px;line-height:1.7;padding:10px 12px;border-radius:8px;" class="card-inner">${bib}</div>
-    </div>`;
-}
-
-// ─── MODALS ───────────────────────────────────────────────────
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function populateModuleSelect(id) {
-  document.getElementById(id).innerHTML = modules.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-}
-
-function openAddAssignment() { populateModuleSelect('aModule'); openModal('modalAssign'); }
-function openAddModule()     { openModal('modalModule'); }
-function openAddClass()      { populateModuleSelect('cModule'); openModal('modalClass'); }
-function openSettings()      {
-  document.getElementById('sUrl').value         = settings.url||'https://socscilearn.sun.ac.za';
-  document.getElementById('sToken').value       = settings.token||'';
-  document.getElementById('sGistId').value      = settings.gistId||'';
-  document.getElementById('sGithubToken').value = settings.githubToken||'';
-  openModal('modalSettings');
-}
-function openAddNote() {
-  editingNoteId = null;
-  document.getElementById('noteModalTitle').textContent = 'New Note';
-  document.getElementById('nTitle').value   = '';
-  document.getElementById('nContent').value = '';
-  populateModuleSelect('nModule');
-  openModal('modalNote');
-}
-function openEditNote(id) {
-  const n = notes.find(n=>n.id===id);
-  if(!n) return;
-  editingNoteId = id;
-  document.getElementById('noteModalTitle').textContent = 'Edit Note';
-  document.getElementById('nTitle').value   = n.title;
-  document.getElementById('nContent').value = n.content;
-  populateModuleSelect('nModule');
-  document.getElementById('nModule').value  = n.moduleId;
-  openModal('modalNote');
-}
-
-function selectColor(el) {
-  document.querySelectorAll('.color-dot').forEach(d=>d.style.outline='3px solid transparent');
-  el.style.outline = '3px solid white';
-  selectedColor = el.dataset.color;
-}
-
-// ─── SAVE FUNCTIONS ──────────────────────────────────────────
-function saveAssignment() {
-  const title = document.getElementById('aTitle').value.trim();
-  if(!title) return alert('Please enter a title.');
-  assignments.push({
-    id: Date.now(), title,
-    moduleId: parseInt(document.getElementById('aModule').value),
-    type: document.getElementById('aType').value,
-    due:  document.getElementById('aDue').value,
-    marks: document.getElementById('aMarks').value,
-    status: 'pending'
-  });
-  save('jcd_assignments', assignments);
-  closeModal('modalAssign');
-  renderAssignments(); renderDashboard();
-}
-
-function saveModule() {
-  const name = document.getElementById('mName').value.trim();
-  if(!name) return alert('Please enter a module name.');
-  modules.push({ id:Date.now(), name, code:document.getElementById('mCode').value, type:document.getElementById('mType').value, color:selectedColor, progress:0 });
-  save('jcd_modules', modules);
-  closeModal('modalModule');
-  renderModules(); renderDashboard();
-}
-
-function saveClass() {
-  timetable.push({
-    id: Date.now(),
-    moduleId: parseInt(document.getElementById('cModule').value),
-    day:      document.getElementById('cDay').value,
-    time:     document.getElementById('cTime').value,
-    duration: document.getElementById('cDuration').value,
-    venue:    document.getElementById('cVenue').value,
-    type:     document.getElementById('cType').value,
-  });
-  save('jcd_timetable', timetable);
-  closeModal('modalClass');
-  renderTimetable(); renderDashboard();
-}
-
-function saveNote() {
-  const title   = document.getElementById('nTitle').value.trim();
-  const content = document.getElementById('nContent').value.trim();
-  if(!title) return alert('Please enter a title.');
-  if(editingNoteId) {
-    const n = notes.find(n=>n.id===editingNoteId);
-    if(n) { n.title=title; n.content=content; n.moduleId=parseInt(document.getElementById('nModule').value); }
-  } else {
-    notes.push({ id:Date.now(), title, content, moduleId:parseInt(document.getElementById('nModule').value), date:new Date().toISOString() });
-  }
-  save('jcd_notes', notes);
-  closeModal('modalNote');
-  renderNotes();
-}
-
-function deleteNote(id) {
-  if(!confirm('Delete this note?')) return;
-  notes = notes.filter(n=>n.id!==id);
-  save('jcd_notes', notes);
-  renderNotes();
-}
-
-function saveSettings() {
-  settings.url         = document.getElementById('sUrl').value.trim().replace(/\/$/,'');
-  settings.token       = document.getElementById('sToken').value.trim();
-  settings.gistId      = document.getElementById('sGistId').value.trim();
-  settings.githubToken = document.getElementById('sGithubToken').value.trim();
-  save('jcd_settings', settings);
-  // Push Gist config to server if local
-  if (IS_LOCAL && settings.gistId && settings.githubToken) {
-    fetch('/api/cloud-config', {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({gist_id: settings.gistId, github_token: settings.githubToken})});
-  }
-  syncSocSciLearn();
-}
-
-// ─── SOCSCILEARN SYNC ────────────────────────────────────────
-async function syncSocSciLearn() {
-  if(!settings.token) { openSettings(); return; }
-  const btn = document.getElementById('syncBtnMain');
-  const statusEl = document.getElementById('syncStatus');
-  if(btn) { btn.innerHTML = '<svg class="spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Syncing...'; btn.disabled=true; }
-  if(statusEl) statusEl.textContent = 'Connecting to SocSciLearn...';
-
-  const base = `${settings.url}/webservice/rest/server.php`;
-  // Use the local proxy if available (http://localhost:8080/api/moodle), else direct
-  const proxyBase = window.location.hostname==='localhost' ? `/api/moodle` : null;
-
-  const call = async (fn, extra='') => {
-    const url = proxyBase
-      ? `${proxyBase}?wstoken=${settings.token}&wsfunction=${fn}&moodlewsrestformat=json${extra}`
-      : `${base}?wstoken=${settings.token}&wsfunction=${fn}&moodlewsrestformat=json${extra}`;
-    const r = await fetch(url);
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-  };
-
-  try {
-    // 1. Get site info + user ID
-    const info = await call('core_webservice_get_site_info');
-    if(info.exception) throw new Error(info.message||'Auth failed');
-    const uid = info.userid;
-    if(statusEl) statusEl.textContent = `Authenticated as ${info.fullname}. Fetching courses...`;
-
-    // 2. Get enrolled courses
-    const courses = await call('core_enrol_get_users_courses', `&userid=${uid}`);
-    if(Array.isArray(courses) && courses.length>0) {
-      const modColors = ['#6366f1','#3b82f6','#10b981','#f59e0b','#ef4444','#14b8a6','#a855f7','#ec4899'];
-      // Merge — keep manual entries, update/add from SocSciLearn
-      courses.forEach((c,i) => {
-        const existing = modules.find(m=>m.socsciId===c.id||m.name===c.shortname);
-        if(!existing) {
-          modules.push({ id:Date.now()+i, socsciId:c.id, name:c.shortname||c.fullname, code:c.shortname||'', type:'Year Module', color:modColors[i%modColors.length], progress:0 });
-        } else {
-          existing.socsciId = c.id;
+    <script>
+        const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+        const COLORS = {
+            accent1: '#6366f1',
+            accent2: '#3b82f6',
+            accent3: '#10b981',
+            accent4: '#f59e0b',
+            accent5: '#ef4444',
+            accent6: '#14b8a6',
+        };
+
+        const COLOR_ARRAY = [COLORS.accent1, COLORS.accent2, COLORS.accent3, COLORS.accent4, COLORS.accent5, COLORS.accent6];
+
+        const KNOWN_COURSES = {
+            4071: { name: 'Foundations of Law', code: 'LAW 178', color: COLORS.accent1 },
+            4075: { name: 'Family Law', code: 'LAW 214', color: COLORS.accent4 },
+            4083: { name: 'Legal Ethics', code: 'LAW 214', color: COLORS.accent6 },
+            4470: { name: 'Intro to Constitutional Law', code: 'LAW 178', color: COLORS.accent3 },
+            4501: { name: 'Constitutional Law', code: 'LAW 214', color: COLORS.accent5 },
+        };
+
+        const DEFAULT_MODULES = [
+            { id: 'mod-1', name: 'Foundations of Law', code: 'LAW 178', type: 'Year Module', color: COLORS.accent1, socsciId: 4071 },
+            { id: 'mod-2', name: 'Property Law', code: 'LAW 278', type: 'Year Module', color: COLORS.accent2, socsciId: null },
+            { id: 'mod-3', name: 'Intro to Constitutional Law', code: 'LAW 178', type: 'Year Module', color: COLORS.accent3, socsciId: 4470 },
+            { id: 'mod-4', name: 'Family Law', code: 'LAW 214', type: 'Semester 1', color: COLORS.accent4, socsciId: 4075 },
+            { id: 'mod-5', name: 'Constitutional Law', code: 'LAW 214', type: 'Semester 1', color: COLORS.accent5, socsciId: 4501 },
+            { id: 'mod-6', name: 'Legal Ethics', code: 'LAW 214', type: 'Semester 1', color: COLORS.accent6, socsciId: 4083 },
+        ];
+
+        const DEFAULT_TIMETABLE = [
+            { id: 'class-1', module: 'Foundations of Law', day: 'Monday', time: '09:00', duration: '1h', venue: 'VDS 1024', type: 'Lecture' },
+            { id: 'class-2', module: 'Foundations of Law', day: 'Monday', time: '14:00', duration: '1h', venue: 'OMB 1031', type: 'Tutorial' },
+            { id: 'class-3', module: 'Family Law', day: 'Tuesday', time: '08:00', duration: '1h', venue: 'Krotoa 1001', type: 'Lecture' },
+            { id: 'class-4', module: 'Legal Ethics', day: 'Tuesday', time: '09:00', duration: '1h', venue: 'Krotoa 3001', type: 'Lecture' },
+            { id: 'class-5', module: 'Legal Ethics', day: 'Wednesday', time: '08:00', duration: '1h', venue: '', type: 'Tutorial' },
+            { id: 'class-6', module: 'Legal Ethics', day: 'Wednesday', time: '11:00', duration: '1h', venue: 'Krotoa 3001', type: 'Lecture' },
+            { id: 'class-7', module: 'Foundations of Law', day: 'Wednesday', time: '12:00', duration: '1h', venue: 'VDS 1024', type: 'Lecture' },
+            { id: 'class-8', module: 'Family Law', day: 'Wednesday', time: '15:00', duration: '1h', venue: 'Krotoa 1001', type: 'Lecture' },
+            { id: 'class-9', module: 'Constitutional Law', day: 'Wednesday', time: '16:00', duration: '1h', venue: 'Krotoa 1001', type: 'Lecture' },
+            { id: 'class-10', module: 'Foundations of Law', day: 'Thursday', time: '08:00', duration: '1h', venue: 'VDS 1024', type: 'Lecture' },
+            { id: 'class-11', module: 'Intro to Constitutional Law', day: 'Thursday', time: '09:00', duration: '1h', venue: 'Krotoa 1001', type: 'Lecture' },
+            { id: 'class-12', module: 'Property Law', day: 'Thursday', time: '14:00', duration: '1h', venue: 'VDS 3124', type: 'Lecture' },
+            { id: 'class-13', module: 'Constitutional Law', day: 'Thursday', time: '15:00', duration: '1h', venue: 'Krotoa 1001', type: 'Lecture' },
+            { id: 'class-14', module: 'Intro to Constitutional Law', day: 'Friday', time: '08:00', duration: '1h', venue: 'BA 230', type: 'Lecture' },
+            { id: 'class-15', module: 'Property Law', day: 'Friday', time: '09:00', duration: '1h', venue: 'JM 301', type: 'Lecture' },
+        ];
+
+        let currentPage = 'dashboard';
+        let modules = loadData('jcd_modules', DEFAULT_MODULES);
+        let assessments = loadData('jcd_assessments', []);
+        let assignments = loadData('jcd_assignments', []);
+        let timetable = loadData('jcd_timetable', DEFAULT_TIMETABLE);
+        let notes = loadData('jcd_notes', []);
+        let settings = loadData('jcd_settings', { socsciUrl: '', socsciToken: '', githubGistId: '', githubPat: '' });
+
+        function loadData(key, defaultValue) {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : defaultValue;
         }
-      });
-      save('jcd_modules', modules);
-    }
 
-    // 3. Get upcoming assignments
-    const enrolledIds = modules.filter(m=>m.socsciId).map(m=>m.socsciId);
-    for (const cid of enrolledIds.slice(0,6)) {
-      try {
-        const assigns = await call('mod_assign_get_assignments', `&courseids[0]=${cid}`);
-        if(assigns && assigns.courses) {
-          assigns.courses.forEach(course => {
-            const mod = modules.find(m=>m.socsciId===course.id);
-            if(!mod) return;
-            course.assignments.forEach(a => {
-              if(!assignments.find(ex=>ex.socsciId===a.id)) {
-                assignments.push({
-                  id:Date.now()+Math.random(), socsciId:a.id, title:a.name,
-                  moduleId:mod.id, type:'Assignment',
-                  due: a.duedate ? new Date(a.duedate*1000).toISOString().split('T')[0] : '',
-                  marks:a.grade||100, status:'pending'
-                });
-              }
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function navigate(pageId) {
+            currentPage = pageId;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            renderPage();
+        }
+
+        function renderPage() {
+            const header = document.getElementById('page-header');
+            const content = document.getElementById('page-content');
+
+            switch (currentPage) {
+                case 'dashboard':
+                    header.innerHTML = '';
+                    content.innerHTML = renderDashboard();
+                    break;
+                case 'modules':
+                    header.innerHTML = '<h2 style="font-size: 28px; font-weight: 700;">Modules</h2>';
+                    content.innerHTML = renderModulesPage();
+                    break;
+                case 'assessments':
+                    header.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="font-size: 28px; font-weight: 700;">Assessments</h2><button class="btn btn-primary" data-action="add-assessment">+ Add Assessment</button></div>';
+                    content.innerHTML = renderAssessmentsPage();
+                    break;
+                case 'assignments':
+                    header.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="font-size: 28px; font-weight: 700;">Assignments</h2><button class="btn btn-primary" data-action="add-assignment">+ Add Assignment</button></div>';
+                    content.innerHTML = renderAssignmentsPage();
+                    break;
+                case 'timetable':
+                    header.innerHTML = '<h2 style="font-size: 28px; font-weight: 700;">Timetable</h2>';
+                    content.innerHTML = renderTimetablePage();
+                    break;
+                case 'notes':
+                    header.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><h2 style="font-size: 28px; font-weight: 700;">Notes</h2><button class="btn btn-primary" data-action="add-note">+ Add Note</button></div>';
+                    content.innerHTML = renderNotesPage();
+                    break;
+                case 'referencing':
+                    header.innerHTML = '<h2 style="font-size: 28px; font-weight: 700;">Citation Generator</h2>';
+                    content.innerHTML = renderReferencingPage();
+                    break;
+            }
+
+            attachEventListeners();
+        }
+
+        function getModuleColor(moduleName) {
+            const mod = modules.find(m => m.name === moduleName);
+            return mod ? mod.color : '#7c5cfc';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-ZA', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function getDaysUntil(dateStr) {
+            if (!dateStr) return null;
+            const d = new Date(dateStr);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            d.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        function renderDashboard() {
+            const today = new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const activeAssessments = assessments.filter(a => getDaysUntil(a.date) > 0).length;
+            const pendingAssignments = assignments.filter(a => a.status !== 'Graded').length;
+            const todayClasses = timetable.filter(c => {
+                const dayMap = { 0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday' };
+                return c.day === dayMap[new Date().getDay()];
             });
-          });
+
+            const upcomingDeadlines = [
+                ...assessments.filter(a => getDaysUntil(a.date) > 0).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3),
+                ...assignments.filter(a => a.status !== 'Graded' && a.dueDate).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).slice(0, 3)
+            ].sort((a, b) => {
+                const dateA = new Date(a.date || a.dueDate);
+                const dateB = new Date(b.date || b.dueDate);
+                return dateA - dateB;
+            }).slice(0, 5);
+
+            return `
+                <div style="display: flex; flex-direction: column; gap: 32px;">
+                    <div>
+                        <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">Welcome back, Josh</h1>
+                        <p style="color: var(--text-secondary); font-size: 15px;">${today}</p>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="stat-card">
+                            <div class="label">Active Modules</div>
+                            <div class="value">${modules.length}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Upcoming Assessments</div>
+                            <div class="value">${activeAssessments}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Pending Tasks</div>
+                            <div class="value">${pendingAssignments}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Today's Classes</div>
+                            <div class="value">${todayClasses.length}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Your Modules</h3>
+                        <div class="grid-3">
+                            ${modules.map(mod => `
+                                <div class="module-card" style="--accent-color: ${mod.color};" data-action="view-module" data-module-id="${mod.id}">
+                                    <div class="header">
+                                        <div>
+                                            <div class="name">${mod.name}</div>
+                                            <div class="code">${mod.code}</div>
+                                        </div>
+                                        <div class="badge">${mod.type}</div>
+                                    </div>
+                                    <div class="stats">
+                                        <div class="stat-item">📝 ${assignments.filter(a => a.module === mod.name).length}</div>
+                                        <div class="stat-item">📖 ${notes.filter(n => n.module === mod.name).length}</div>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${Math.min(notes.filter(n => n.module === mod.name).length * 20, 100)}%;"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="content-with-sidebar">
+                        <div></div>
+                        <div class="sidebar-panel">
+                            <div>
+                                <div class="sidebar-section-title">Upcoming Deadlines</div>
+                                ${upcomingDeadlines.length > 0 ? upcomingDeadlines.map(item => `
+                                    <div class="sidebar-item upcoming">
+                                        <div class="sidebar-item-title">${item.title || item.name}</div>
+                                        <div class="sidebar-item-detail">${item.module}</div>
+                                        <div class="sidebar-item-detail">${formatDate(item.date || item.dueDate)}</div>
+                                    </div>
+                                `).join('') : '<div class="sidebar-item">No upcoming deadlines</div>'}
+                            </div>
+
+                            <div>
+                                <div class="sidebar-section-title">Today's Schedule</div>
+                                ${todayClasses.length > 0 ? todayClasses.map(cls => `
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-title">${cls.module}</div>
+                                        <div class="sidebar-item-detail">${cls.time} • ${cls.type}</div>
+                                        <div class="sidebar-item-detail">${cls.venue || 'TBD'}</div>
+                                    </div>
+                                `).join('') : '<div class="sidebar-item">No classes today</div>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
-      } catch(e) { /* skip failed course */ }
-    }
-    save('jcd_assignments', assignments);
 
-    if(statusEl) statusEl.innerHTML = `<span style="color:#34d399;">✓ Synced ${courses.length} courses and ${assignments.length} assignments!</span>`;
-    closeModal('modalSettings');
-    renderDashboard();
-    renderAssignments();
-    renderModules();
-    // Push to GitHub Gist for cross-device access
-    pushToCloud();
-  } catch(err) {
-    if(statusEl) statusEl.innerHTML = `<span style="color:#f87171;">✕ Sync failed: ${err.message}. Check your token and URL, or ensure the server is running.</span>`;
-    console.error('SocSciLearn sync error:', err);
-  } finally {
-    if(btn) { btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Sync SocSciLearn'; btn.disabled=false; }
-  }
-}
-
-// ─── CLOUD SYNC (GitHub Gist) ────────────────────────────────
-async function pushToCloud() {
-  if (!IS_LOCAL || !settings.gistId) return;
-  const payload = { modules, assignments, timetable, notes, exportedAt: new Date().toISOString() };
-  try {
-    const r = await fetch('/api/cloud-push', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-    const j = await r.json();
-    if (j.ok) console.log('✓ Cloud sync pushed to Gist');
-  } catch(e) { console.warn('Cloud push failed:', e); }
-}
-
-async function fetchFromCloud() {
-  if (IS_LOCAL || !settings.gistId) return;
-  try {
-    const r = await fetch(`https://api.github.com/gists/${settings.gistId}`, {headers:{'Accept':'application/vnd.github.v3+json'}});
-    if (!r.ok) return;
-    const gist = await r.json();
-    const content = gist.files?.['jcdxlaw-data.json']?.content;
-    if (!content) return;
-    const data = JSON.parse(content);
-    if (data.modules?.length)     { modules = data.modules; save('jcd_modules', modules); }
-    if (data.assignments?.length) { assignments = data.assignments; save('jcd_assignments', assignments); }
-    if (data.timetable?.length)   { timetable = data.timetable; save('jcd_timetable', timetable); save('jcd_timetable_ver', TIMETABLE_VER); }
-    if (data.notes?.length)       { notes = data.notes; save('jcd_notes', notes); }
-    renderDashboard(); renderModules(); renderAssignments();
-    console.log('✓ Loaded data from Gist');
-  } catch(e) { console.warn('Cloud fetch failed:', e); }
-}
-
-// ─── APPLE CALENDAR SYNC ─────────────────────────────────────
-let calendarData = { today: [], upcoming: [], total: 0, diagnostic: {} };
-let tasksData    = { deadlines: [], skillRuns: [], lastUpdated: null };
-
-async function syncCalendar(silent=false) {
-  if (!IS_LOCAL) {
-    if (!silent) {
-      const el = document.getElementById('calSyncStatus');
-      if (el) el.innerHTML = `<span style="color:#f59e0b;font-size:11px;">ℹ Running on GitHub Pages — calendar sync requires local server. All other features work normally.</span>`;
-    }
-    return;
-  }
-
-  try {
-    const [calRes, taskRes] = await Promise.all([
-      fetch('/api/calendar').then(r=>r.ok?r.json():null).catch(()=>null),
-      fetch('/api/tasks').then(r=>r.ok?r.json():null).catch(()=>null)
-    ]);
-
-    if (calRes) {
-      calendarData = calRes;
-      // Calendar → timetable: import all timed events that match a module.
-      // Store raw events so the timetable can show everything found.
-      save('jcd_cal_events', calRes);
-      const allCalEvents = [...(calRes.today||[]), ...(calRes.upcoming||[])];
-      const seen = new Set(timetable.map(t => t.day+'|'+t.time+'|'+t.moduleId));
-      allCalEvents.forEach(ev => {
-        if (!ev.summary || !ev.dtstart || !ev.dtstart.includes('T')) return;
-        const timeStr = ev.dtstart.split('T')[1].slice(0,5);
-        if (!timeStr || timeStr === '00:00') return; // skip all-day events
-        const dayName = new Date(ev.date+'T12:00:00').toLocaleDateString('en-ZA',{weekday:'long'});
-        // Match to a module by name keyword or code
-        const matchMod = modules.find(m =>
-          ev.summary.toLowerCase().includes(m.name.toLowerCase().split(' ')[0]) ||
-          (m.code && ev.summary.includes(m.code))
-        );
-        if (!matchMod) return;
-        const key = dayName+'|'+timeStr+'|'+matchMod.id;
-        if (seen.has(key)) return;
-        seen.add(key);
-        timetable.push({ id:Date.now()+Math.random(), moduleId:matchMod.id, day:dayName, time:timeStr, duration:60, venue:ev.location||'', type:'Lecture', fromCalendar:true, calTitle:ev.summary });
-      });
-      save('jcd_timetable', timetable);
-      save('jcd_assignments', assignments);
-    }
-
-    if (taskRes) {
-      tasksData = taskRes;
-      // Merge legal skill deadlines into assignments
-      (taskRes.deadlines||[]).forEach(d => {
-        const exists = assignments.find(a=>a.skillId && a.skillId===d.id);
-        if (!exists) {
-          const matchMod = modules.find(m=>d.module && d.module.toLowerCase().includes(m.name.toLowerCase().split(' ')[0]));
-          assignments.push({ id:Date.now()+Math.random(), skillId:d.id, title:d.title, moduleId:matchMod?.id||null, type:d.type||'Task', due:d.date, status:d.status||'pending', fromSkill:true });
+        function renderModulesPage() {
+            return `
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <button class="btn btn-primary" data-action="add-module">+ Add Module</button>
+                    <div class="grid-3">
+                        ${modules.map(mod => `
+                            <div class="module-card" style="--accent-color: ${mod.color};" data-action="view-module" data-module-id="${mod.id}">
+                                <div class="header">
+                                    <div>
+                                        <div class="name">${mod.name}</div>
+                                        <div class="code">${mod.code}</div>
+                                    </div>
+                                    <div class="badge">${mod.type}</div>
+                                </div>
+                                <div class="stats">
+                                    <div class="stat-item">📝 ${assignments.filter(a => a.module === mod.name).length}</div>
+                                    <div class="stat-item">📖 ${notes.filter(n => n.module === mod.name).length}</div>
+                                    <div class="stat-item">📋 ${assessments.filter(a => a.module === mod.name).length}</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${Math.min((assignments.filter(a => a.module === mod.name).length + notes.filter(n => n.module === mod.name).length) * 10, 100)}%;"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         }
-      });
-      save('jcd_assignments', assignments);
-    }
 
-    if (!silent) {
-      renderDashboard();
-      renderAssignments();
-      renderTimetable();
-    }
-    updateCalendarStatus(calRes, taskRes);
-  } catch(e) {
-    console.warn('Calendar sync skipped (server not running):', e.message);
-  }
-}
+        function renderAssessmentsPage() {
+            const filters = ['All', 'Upcoming', 'Completed'];
+            const activeFilter = document.querySelector('.filter-pill.active')?.textContent || 'All';
 
-function updateCalendarStatus(calRes, taskRes) {
-  const el = document.getElementById('calSyncStatus');
-  if (!el) return;
-  if (calRes) {
-    const t = new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
-    el.innerHTML = `<span style="color:#34d399;font-size:11px;">✓ Calendar synced ${t} · ${calRes.total} events</span>`;
-  } else {
-    el.innerHTML = `<span style="color:#f59e0b;font-size:11px;">⚠ Calendar offline — server not running</span>`;
-  }
-}
+            let filtered = assessments;
+            if (activeFilter === 'Upcoming') {
+                filtered = assessments.filter(a => getDaysUntil(a.date) > 0);
+            } else if (activeFilter === 'Completed') {
+                filtered = assessments.filter(a => getDaysUntil(a.date) <= 0);
+            }
 
-// ─── SKILL ACTIVITY LOG ───────────────────────────────────────
-function renderSkillActivity() {
-  const el = document.getElementById('skillActivityLog');
-  if (!el) return;
-  const runs = tasksData.skillRuns || [];
-  if (runs.length === 0) {
-    el.innerHTML = `<div class="empty-state" style="font-size:12px;text-align:center;padding:20px;">No skill runs yet. Use deadlines, study-brief, or tutorial-prep to see activity here.</div>`;
-    return;
-  }
-  el.innerHTML = runs.slice(0,8).map(r => `
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid;" class="divider">
-      <div style="width:28px;height:28px;background:rgba(99,102,241,.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">⚖</div>
-      <div style="flex:1;">
-        <div style="font-size:12px;font-weight:600;">${r.skill||'Legal Skill'}</div>
-        <div style="font-size:11px;color:#64748b;">${r.summary||''}</div>
-      </div>
-      <div style="font-size:10px;color:#64748b;">${r.timestamp ? new Date(r.timestamp).toLocaleDateString('en-ZA',{day:'numeric',month:'short'}) : ''}</div>
-    </div>
-  `).join('');
-}
+            return `
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="filter-group">
+                        ${filters.map(f => `
+                            <div class="filter-pill ${f === activeFilter ? 'active' : ''}" data-filter="${f}">${f}</div>
+                        `).join('')}
+                    </div>
 
-// ─── DATA EXPORT/IMPORT ──────────────────────────────────────
-function exportData() {
-  const data = {
-    modules: modules,
-    assignments: assignments,
-    timetable: timetable,
-    notes: notes,
-    settings: settings,
-    exported: new Date().toISOString()
-  };
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'jcdxlaw-data.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Assessment Name</th>
+                                <th>Module</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Venue</th>
+                                <th>Weight</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.length > 0 ? filtered.map(a => `
+                                <tr>
+                                    <td>${a.name}</td>
+                                    <td>${a.module}</td>
+                                    <td>${a.type}</td>
+                                    <td>${formatDate(a.date)}</td>
+                                    <td>${a.venue || '-'}</td>
+                                    <td>${a.weight || '-'}</td>
+                                    <td><span class="status-badge ${getDaysUntil(a.date) > 0 ? 'upcoming' : 'completed'}">${getDaysUntil(a.date) > 0 ? 'Upcoming' : 'Completed'}</span></td>
+                                </tr>
+                            `).join('') : '<tr><td colspan="7" style="text-align: center; padding: 32px;">No assessments</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
 
-function importData() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'application/json';
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        if (data.modules) modules = data.modules;
-        if (data.assignments) assignments = data.assignments;
-        if (data.timetable) timetable = data.timetable;
-        if (data.notes) notes = data.notes;
-        if (data.settings) settings = data.settings;
-        save('jcd_modules', modules);
-        save('jcd_assignments', assignments);
-        save('jcd_timetable', timetable);
-        save('jcd_notes', notes);
-        save('jcd_settings', settings);
-        alert('Data imported successfully!');
-        renderDashboard();
-        renderModules();
-        renderAssignments();
-        renderTimetable();
-        renderNotes();
-      } catch(err) {
-        alert('Error importing data: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
+        function renderAssignmentsPage() {
+            const filters = ['All', 'Pending', 'Submitted', 'Graded'];
+            const activeFilter = document.querySelector('.filter-pill.active')?.textContent || 'All';
 
-// ─── CLOSE MODALS ON OVERLAY CLICK ───────────────────────────
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
-});
+            let filtered = assignments;
+            if (activeFilter === 'Pending') {
+                filtered = assignments.filter(a => a.status === 'Pending');
+            } else if (activeFilter === 'Submitted') {
+                filtered = assignments.filter(a => a.status === 'Submitted');
+            } else if (activeFilter === 'Graded') {
+                filtered = assignments.filter(a => a.status === 'Graded');
+            }
 
-// ─── PWA ─────────────────────────────────────────────────────
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+            return `
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="filter-group">
+                        ${filters.map(f => `
+                            <div class="filter-pill ${f === activeFilter ? 'active' : ''}" data-filter="${f}">${f}</div>
+                        `).join('')}
+                    </div>
 
-// ─── INIT ────────────────────────────────────────────────────
-renderDashboard();
-// On GitHub Pages: fetch latest data from Gist if configured
-if (!IS_LOCAL) fetchFromCloud();
-// Sync calendar on load (will silently skip if server isn't running)
-if (IS_LOCAL) syncCalendar(true).then(() => renderDashboard());
-// Re-sync calendar every 5 minutes while app is open (local only)
-if (IS_LOCAL) setInterval(() => syncCalendar(true), 5 * 60 * 1000);
-</script>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Module</th>
+                                <th>Type</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.length > 0 ? filtered.map(a => `
+                                <tr>
+                                    <td>${a.title}</td>
+                                    <td>${a.module}</td>
+                                    <td>${a.type}</td>
+                                    <td>${formatDate(a.dueDate)}</td>
+                                    <td><span class="status-badge ${a.status.toLowerCase()}">${a.status}</span></td>
+                                    <td>${a.marks || '-'}</td>
+                                </tr>
+                            `).join('') : '<tr><td colspan="6" style="text-align: center; padding: 32px;">No assignments</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderTimetablePage() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const hours = Array.from({length: 11}, (_, i) => `${7 + i}:00`);
+
+            return `
+                <div style="overflow-x: auto;">
+                    <div class="timetable-grid">
+                        <div class="time-slot header"></div>
+                        ${days.map(day => `<div class="time-slot header">${day}</div>`).join('')}
+
+                        ${hours.map(hour => `
+                            <div class="time-slot header">${hour}</div>
+                            ${days.map(day => {
+                                const cls = timetable.find(c => c.day === day && c.time === hour);
+                                return `
+                                    <div class="time-slot ${cls ? 'has-class' : ''}" style="${cls ? `--accent-color: ${getModuleColor(cls.module)}` : ''}">
+                                        ${cls ? `<div class="class-in-slot">${cls.module}</div><div style="font-size: 10px; margin-top: 4px;">${cls.type}</div>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotesPage() {
+            const moduleFilter = document.querySelector('[data-module-filter]')?.value || 'All';
+            let filtered = notes;
+            if (moduleFilter !== 'All') {
+                filtered = notes.filter(n => n.module === moduleFilter);
+            }
+
+            return `
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <select data-module-filter style="max-width: 200px;" class="form-group" style="margin-bottom: 0;">
+                        <option value="All">All Modules</option>
+                        ${modules.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+
+                    <div class="grid-3">
+                        ${filtered.length > 0 ? filtered.map(n => `
+                            <div class="note-card">
+                                <div class="module-tag">${n.module}</div>
+                                <div class="title">${n.title}</div>
+                                <div class="preview">${n.content.substring(0, 100)}</div>
+                            </div>
+                        `).join('') : '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">No notes yet</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReferencingPage() {
+            return `
+                <div style="max-width: 800px;">
+                    <div class="reference-type-buttons">
+                        <button class="btn btn-secondary" data-ref-type="case">Case</button>
+                        <button class="btn btn-secondary" data-ref-type="legislation">Legislation</button>
+                        <button class="btn btn-secondary" data-ref-type="book">Book</button>
+                        <button class="btn btn-secondary" data-ref-type="journal">Journal</button>
+                        <button class="btn btn-secondary" data-ref-type="chapter">Chapter</button>
+                        <button class="btn btn-secondary" data-ref-type="internet">Internet</button>
+                    </div>
+
+                    <div id="ref-form" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px;">
+                    </div>
+
+                    <div class="reference-output output-tabs">
+                        <div class="reference-tabs">
+                            <button class="reference-tab-button active" data-tab="footnote">Footnote</button>
+                            <button class="reference-tab-button" data-tab="subsequent">Subsequent</button>
+                            <button class="reference-tab-button" data-tab="bibliography">Bibliography</button>
+                        </div>
+                        <div class="reference-tab-content active" data-tab="footnote" id="footnote-output">Select a reference type and fill in the details</div>
+                        <div class="reference-tab-content" data-tab="subsequent" id="subsequent-output"></div>
+                        <div class="reference-tab-content" data-tab="bibliography" id="bibliography-output"></div>
+                    </div>
+
+                    <div style="margin-top: 32px; padding: 20px; background: var(--surface); border-radius: 16px; border: 1px solid var(--border);">
+                        <h3 style="font-weight: 700; margin-bottom: 16px;">OSCOLA Quick Reference</h3>
+                        <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+                            <p><strong>Case:</strong> Surname [year] (series) startpage, pinpoint</p>
+                            <p><strong>Legislation:</strong> Short title (year)</p>
+                            <p><strong>Book:</strong> Surname, Title (edition, year) startpage</p>
+                            <p><strong>Journal:</strong> Surname, 'Title' (year) volume(issue) startpage</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showModal(title, content, actions) {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+
+            let html = `
+                <button class="modal-close" data-action="close-modal">✕</button>
+                <h2 class="modal-title">${title}</h2>
+                ${content}
+            `;
+
+            if (actions) {
+                html += `
+                    <div class="modal-actions">
+                        ${actions.map(a => `<button class="btn ${a.primary ? 'btn-primary' : 'btn-secondary'}" data-action="${a.action}">${a.label}</button>`).join('')}
+                    </div>
+                `;
+            }
+
+            modalContent.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function getAddAssessmentForm() {
+            return `
+                <div class="form-group">
+                    <label>Assessment Name</label>
+                    <input type="text" id="assessment-name" placeholder="e.g., Constitutional Law Test 1">
+                </div>
+                <div class="form-group">
+                    <label>Module</label>
+                    <select id="assessment-module">
+                        <option value="">Select a module</option>
+                        ${modules.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="assessment-type">
+                        <option value="">Select type</option>
+                        <option value="Test">Test</option>
+                        <option value="Exam">Exam</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="assessment-date">
+                </div>
+                <div class="form-group">
+                    <label>Venue</label>
+                    <input type="text" id="assessment-venue" placeholder="e.g., VDS 1024">
+                </div>
+                <div class="form-group">
+                    <label>Weight (%)</label>
+                    <input type="number" id="assessment-weight" placeholder="e.g., 30">
+                </div>
+                <div class="form-group">
+                    <label>Total Marks</label>
+                    <input type="number" id="assessment-marks" placeholder="e.g., 100">
+                </div>
+            `;
+        }
+
+        function getAddAssignmentForm() {
+            return `
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="assignment-title" placeholder="e.g., Constitutional Law Essay">
+                </div>
+                <div class="form-group">
+                    <label>Module</label>
+                    <select id="assignment-module">
+                        <option value="">Select a module</option>
+                        ${modules.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="assignment-type">
+                        <option value="">Select type</option>
+                        <option value="Essay">Essay</option>
+                        <option value="Tutorial">Tutorial</option>
+                        <option value="Research Paper">Research Paper</option>
+                        <option value="Oral">Oral</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" id="assignment-due-date">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="assignment-status">
+                        <option value="Pending">Pending</option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Graded">Graded</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Marks (out of)</label>
+                    <input type="number" id="assignment-marks" placeholder="e.g., 100">
+                </div>
+            `;
+        }
+
+        function getAddModuleForm() {
+            return `
+                <div class="form-group">
+                    <label>Module Name</label>
+                    <input type="text" id="module-name" placeholder="e.g., Constitutional Law">
+                </div>
+                <div class="form-group">
+                    <label>Module Code</label>
+                    <input type="text" id="module-code" placeholder="e.g., LAW 214">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="module-type">
+                        <option value="Year Module">Year Module</option>
+                        <option value="Semester 1">Semester 1</option>
+                        <option value="Semester 2">Semester 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker-group">
+                        ${COLOR_ARRAY.map((c, i) => `<div class="color-option" style="background: ${c};" data-color="${c}"></div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAddNoteForm() {
+            return `
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="note-title" placeholder="e.g., Constitutional Principles">
+                </div>
+                <div class="form-group">
+                    <label>Module</label>
+                    <select id="note-module">
+                        <option value="">Select a module</option>
+                        ${modules.map(m => `<option value="${m.name}">${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea id="note-content" placeholder="Write your note here..."></textarea>
+                </div>
+            `;
+        }
+
+        function getSettingsForm() {
+            return `
+                <div class="form-group">
+                    <label>SocSciLearn URL</label>
+                    <input type="text" id="settings-socsci-url" value="${settings.socsciUrl}" placeholder="https://socscilearn.sun.ac.za">
+                </div>
+                <div class="form-group">
+                    <label>SocSciLearn Token</label>
+                    <input type="password" id="settings-socsci-token" value="${settings.socsciToken}" placeholder="Your API token">
+                </div>
+                <div class="form-group">
+                    <label>GitHub Gist ID</label>
+                    <input type="text" id="settings-github-gist" value="${settings.githubGistId}" placeholder="Your Gist ID for cloud sync">
+                </div>
+                <div class="form-group">
+                    <label>GitHub PAT</label>
+                    <input type="password" id="settings-github-pat" value="${settings.githubPat}" placeholder="GitHub Personal Access Token">
+                </div>
+            `;
+        }
+
+        function saveAssessment() {
+            const assessment = {
+                id: Date.now().toString(),
+                name: document.getElementById('assessment-name').value,
+                module: document.getElementById('assessment-module').value,
+                type: document.getElementById('assessment-type').value,
+                date: document.getElementById('assessment-date').value,
+                venue: document.getElementById('assessment-venue').value,
+                weight: document.getElementById('assessment-weight').value,
+                totalMarks: document.getElementById('assessment-marks').value,
+            };
+
+            if (!assessment.name || !assessment.module || !assessment.type) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            assessments.push(assessment);
+            saveData('jcd_assessments', assessments);
+            closeModal();
+            navigate('assessments');
+        }
+
+        function saveAssignment() {
+            const assignment = {
+                id: Date.now().toString(),
+                title: document.getElementById('assignment-title').value,
+                module: document.getElementById('assignment-module').value,
+                type: document.getElementById('assignment-type').value,
+                dueDate: document.getElementById('assignment-due-date').value,
+                status: document.getElementById('assignment-status').value,
+                marks: document.getElementById('assignment-marks').value,
+            };
+
+            if (!assignment.title || !assignment.module || !assignment.type) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            assignments.push(assignment);
+            saveData('jcd_assignments', assignments);
+            closeModal();
+            navigate('assignments');
+        }
+
+        function saveModule() {
+            const selectedColor = document.querySelector('.color-option.selected');
+            const module = {
+                id: Date.now().toString(),
+                name: document.getElementById('module-name').value,
+                code: document.getElementById('module-code').value,
+                type: document.getElementById('module-type').value,
+                color: selectedColor ? selectedColor.dataset.color : COLORS.accent1,
+                socsciId: null,
+            };
+
+            if (!module.name || !module.code) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            modules.push(module);
+            saveData('jcd_modules', modules);
+            closeModal();
+            navigate('modules');
+        }
+
+        function saveNote() {
+            const note = {
+                id: Date.now().toString(),
+                title: document.getElementById('note-title').value,
+                module: document.getElementById('note-module').value,
+                content: document.getElementById('note-content').value,
+                createdAt: new Date().toISOString(),
+            };
+
+            if (!note.title || !note.module || !note.content) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            notes.push(note);
+            saveData('jcd_notes', notes);
+            closeModal();
+            navigate('notes');
+        }
+
+        function saveSettings() {
+            settings = {
+                socsciUrl: document.getElementById('settings-socsci-url')?.value || settings.socsciUrl || 'https://socscilearn.sun.ac.za',
+                socsciToken: document.getElementById('settings-socsci-token')?.value || settings.socsciToken || '',
+                githubGistId: document.getElementById('settings-github-gist')?.value || settings.githubGistId || '',
+                githubPat: document.getElementById('settings-github-pat')?.value || settings.githubPat || '',
+            };
+            saveData('jcd_settings', settings);
+            // Push gist config to local server for cloud sync
+            if (IS_LOCAL && settings.githubGistId && settings.githubPat) {
+                fetch('/api/cloud-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gist_id: settings.githubGistId, github_token: settings.githubPat }),
+                }).catch(() => {});
+            }
+            closeModal();
+        }
+
+        function exportData() {
+            const data = { modules, assessments, assignments, timetable, notes };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `jcdxlaw-export-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.modules) modules = data.modules;
+                        if (data.assessments) assessments = data.assessments;
+                        if (data.assignments) assignments = data.assignments;
+                        if (data.timetable) timetable = data.timetable;
+                        if (data.notes) notes = data.notes;
+
+                        saveData('jcd_modules', modules);
+                        saveData('jcd_assessments', assessments);
+                        saveData('jcd_assignments', assignments);
+                        saveData('jcd_timetable', timetable);
+                        saveData('jcd_notes', notes);
+
+                        alert('Data imported successfully!');
+                        location.reload();
+                    } catch (err) {
+                        alert('Failed to import data: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        async function syncSocSciLearn() {
+            if (!settings.socsciToken) {
+                showModal('Settings', getSettingsForm(), [
+                    { label: 'Cancel', action: 'close-modal' },
+                    { label: 'Save', action: 'save-settings', primary: true },
+                ]);
+                return;
+            }
+
+            const base = settings.socsciUrl || 'https://socscilearn.sun.ac.za';
+            const proxyBase = IS_LOCAL ? '/api/moodle' : null;
+
+            const call = async (fn, extra = '') => {
+                const url = proxyBase
+                    ? `${proxyBase}?wstoken=${settings.socsciToken}&wsfunction=${fn}&moodlewsrestformat=json${extra}`
+                    : `${base}/webservice/rest/server.php?wstoken=${settings.socsciToken}&wsfunction=${fn}&moodlewsrestformat=json${extra}`;
+                const r = await fetch(url);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            };
+
+            try {
+                // 1. Get user info
+                const info = await call('core_webservice_get_site_info');
+                if (info.exception) throw new Error(info.message || 'Auth failed');
+                const uid = info.userid;
+
+                // 2. Get enrolled courses
+                const courses = await call('core_enrol_get_users_courses', `&userid=${uid}`);
+                if (!Array.isArray(courses)) throw new Error('Invalid response');
+
+                const existingNames = new Set(modules.map(m => m.name.toLowerCase()));
+
+                courses.forEach((course, i) => {
+                    let matched = false;
+
+                    // Match by known socsciId first
+                    const knownCourse = KNOWN_COURSES[course.id];
+                    if (knownCourse) {
+                        const existing = modules.find(m => m.socsciId === course.id || m.name === knownCourse.name);
+                        if (existing) {
+                            existing.socsciId = course.id;
+                            matched = true;
+                        }
+                        // Don't add new — we already have defaults for known courses
+                        matched = true;
+                    }
+
+                    // Try matching by name for unknown courses
+                    if (!matched) {
+                        // Clean ugly Moodle shortnames like "2026-51829-244"
+                        let cleanName = (course.fullname || course.shortname || '')
+                            .replace(/\d{4}-\d+-\d+/g, '')
+                            .replace(/\s*\/\s*.*/g, '') // strip Afrikaans after slash
+                            .replace(/\s+\(.*?\)/g, '')
+                            .replace(/\s+-\s+\d+$/g, '') // strip trailing code
+                            .split('|')[0]
+                            .trim();
+
+                        if (!cleanName || /^\d+$/.test(cleanName) || cleanName.length < 3) return;
+
+                        // Check if already exists by name
+                        const existsByName = modules.find(m => m.name.toLowerCase() === cleanName.toLowerCase());
+                        if (existsByName) {
+                            existsByName.socsciId = course.id;
+                        } else if (!existingNames.has(cleanName.toLowerCase())) {
+                            modules.push({
+                                id: `mod-${Date.now()}-${i}`,
+                                name: cleanName,
+                                code: course.shortname || '',
+                                type: 'Year Module',
+                                color: COLOR_ARRAY[modules.length % COLOR_ARRAY.length],
+                                socsciId: course.id,
+                            });
+                            existingNames.add(cleanName.toLowerCase());
+                        }
+                    }
+                });
+
+                saveData('jcd_modules', modules);
+
+                // 3. Fetch assignments for known modules
+                const enrolledMods = modules.filter(m => m.socsciId);
+                for (const mod of enrolledMods.slice(0, 8)) {
+                    try {
+                        const assigns = await call('mod_assign_get_assignments', `&courseids[0]=${mod.socsciId}`);
+                        if (assigns && assigns.courses) {
+                            assigns.courses.forEach(course => {
+                                course.assignments.forEach(a => {
+                                    if (!assignments.find(ex => ex.socsciId === a.id)) {
+                                        assignments.push({
+                                            id: `assign-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+                                            socsciId: a.id,
+                                            title: a.name,
+                                            module: mod.name,
+                                            type: 'Assignment',
+                                            due: a.duedate ? new Date(a.duedate * 1000).toISOString().split('T')[0] : '',
+                                            marks: a.grade || 100,
+                                            status: 'pending',
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    } catch (e) { /* skip failed course */ }
+                }
+                saveData('jcd_assignments', assignments);
+
+                alert(`Synced ${courses.length} courses from SocSciLearn!`);
+                navigate(currentPage);
+                pushToCloud();
+            } catch (err) {
+                alert('Sync failed: ' + err.message + '. Check your token and ensure the local server is running.');
+                console.error('SocSciLearn sync error:', err);
+            }
+        }
+
+        // ─── CLOUD SYNC (GitHub Gist) ────────────────────────────
+        async function pushToCloud() {
+            if (!IS_LOCAL || !settings.githubGistId || !settings.githubPat) return;
+            const payload = { modules, assessments, assignments, timetable, notes, exportedAt: new Date().toISOString() };
+            try {
+                const r = await fetch('/api/cloud-push', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const j = await r.json();
+                if (j.ok) console.log('Cloud sync pushed to Gist');
+            } catch (e) { console.warn('Cloud push failed:', e); }
+        }
+
+        async function fetchFromCloud() {
+            if (IS_LOCAL || !settings.githubGistId) return;
+            try {
+                const r = await fetch(`https://api.github.com/gists/${settings.githubGistId}`, {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' },
+                });
+                if (!r.ok) return;
+                const gist = await r.json();
+                const content = gist.files?.['jcdxlaw-data.json']?.content;
+                if (!content) return;
+                const data = JSON.parse(content);
+                if (data.modules?.length) { modules = data.modules; saveData('jcd_modules', modules); }
+                if (data.assessments?.length) { assessments = data.assessments; saveData('jcd_assessments', assessments); }
+                if (data.assignments?.length) { assignments = data.assignments; saveData('jcd_assignments', assignments); }
+                if (data.timetable?.length) { timetable = data.timetable; saveData('jcd_timetable', timetable); }
+                if (data.notes?.length) { notes = data.notes; saveData('jcd_notes', notes); }
+                renderPage();
+                console.log('Loaded data from Gist');
+            } catch (e) { console.warn('Cloud fetch failed:', e); }
+        }
+
+        // ─── CALENDAR SYNC (local server only) ──────────────────
+        async function syncCalendar(silent = false) {
+            if (!IS_LOCAL) return;
+            try {
+                const r = await fetch('/api/calendar');
+                if (!r.ok) return;
+                const data = await r.json();
+                // Update today's schedule display
+                console.log(`Calendar: ${data.total} events found`);
+            } catch (e) {
+                if (!silent) console.warn('Calendar sync skipped:', e.message);
+            }
+        }
+
+        function attachEventListeners() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    if (page) navigate(page);
+                });
+            });
+
+            document.querySelectorAll('[data-action]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    switch (action) {
+                        case 'add-assessment':
+                            showModal('Add Assessment', getAddAssessmentForm(), [
+                                { label: 'Cancel', action: 'close-modal' },
+                                { label: 'Save', action: 'save-assessment', primary: true },
+                            ]);
+                            break;
+                        case 'add-assignment':
+                            showModal('Add Assignment', getAddAssignmentForm(), [
+                                { label: 'Cancel', action: 'close-modal' },
+                                { label: 'Save', action: 'save-assignment', primary: true },
+                            ]);
+                            break;
+                        case 'add-module':
+                            showModal('Add Module', getAddModuleForm(), [
+                                { label: 'Cancel', action: 'close-modal' },
+                                { label: 'Save', action: 'save-module', primary: true },
+                            ]);
+                            break;
+                        case 'add-note':
+                            showModal('Add Note', getAddNoteForm(), [
+                                { label: 'Cancel', action: 'close-modal' },
+                                { label: 'Save', action: 'save-note', primary: true },
+                            ]);
+                            break;
+                        case 'sync':
+                            showModal('SocSciLearn Sync', getSettingsForm(), [
+                                { label: 'Close', action: 'close-modal' },
+                                { label: 'Save Settings', action: 'save-settings', primary: true },
+                                { label: 'Sync Now', action: 'sync-now', primary: true },
+                            ]);
+                            break;
+                        case 'save-assessment':
+                            saveAssessment();
+                            break;
+                        case 'save-assignment':
+                            saveAssignment();
+                            break;
+                        case 'save-module':
+                            saveModule();
+                            break;
+                        case 'save-note':
+                            saveNote();
+                            break;
+                        case 'save-settings':
+                            saveSettings();
+                            break;
+                        case 'sync-now':
+                            saveSettings();
+                            syncSocSciLearn();
+                            break;
+                        case 'close-modal':
+                            closeModal();
+                            break;
+                        case 'export':
+                            exportData();
+                            break;
+                        case 'import':
+                            importData();
+                            break;
+                        case 'theme':
+                            document.body.classList.toggle('light-mode');
+                            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+                            break;
+                        case 'view-module':
+                            alert('Module detail view coming soon');
+                            break;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    renderPage();
+                });
+            });
+
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            document.querySelector('[data-module-filter]')?.addEventListener('change', function() {
+                renderPage();
+            });
+
+            document.querySelectorAll('.reference-tab-button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    document.querySelectorAll('.reference-tab-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.reference-tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+                });
+            });
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        renderPage();
+
+        // On GitHub Pages: fetch latest data from Gist
+        if (!IS_LOCAL) fetchFromCloud();
+        // Sync calendar on load (local only, silent)
+        if (IS_LOCAL) syncCalendar(true);
+        // Re-sync calendar every 5 minutes
+        if (IS_LOCAL) setInterval(() => syncCalendar(true), 5 * 60 * 1000);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(e => console.log('SW registration failed:', e));
+        }
+    </script>
 </body>
 </html>
