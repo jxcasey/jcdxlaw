@@ -1,31 +1,44 @@
 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
+    <!-- Main gradient for the background -->
     <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#4338ca;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
     </linearGradient>
+
+    <!-- Frosted glass overlay gradient -->
     <radialGradient id="glassOverlay" cx="40%" cy="30%" r="60%">
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.25" />
       <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.08" />
       <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
     </radialGradient>
+
+    <!-- Subtle inner shadow for depth -->
     <linearGradient id="innerShadow" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#000000;stop-opacity:0.15" />
       <stop offset="50%" style="stop-color:#000000;stop-opacity:0" />
       <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
     </linearGradient>
+
+    <!-- Highlight gradient for glass reflection -->
     <linearGradient id="highlight" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.35" />
       <stop offset="30%" style="stop-color:#ffffff;stop-opacity:0.08" />
       <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
     </linearGradient>
+
+    <!-- Scales icon gradient -->
     <linearGradient id="scalesGradient" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
     </linearGradient>
+
+    <!-- Filter for subtle blur effect on glass -->
     <filter id="glassBlur">
       <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
     </filter>
+
+    <!-- Filter for soft shadow -->
     <filter id="softShadow">
       <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
       <feOffset dx="0" dy="2" result="offsetblur" />
@@ -38,29 +51,64 @@
       </feMerge>
     </filter>
   </defs>
+
+  <!-- Background rounded rectangle with main gradient -->
   <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#mainGradient)" />
+
+  <!-- Inner shadow layer for depth -->
   <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#innerShadow)" />
+
+  <!-- Frosted glass overlay effect -->
   <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#glassOverlay)" />
+
+  <!-- Subtle glass texture overlay -->
   <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#highlight)" />
+
+  <!-- Outer reflection/highlight on top-left -->
   <ellipse cx="140" cy="120" rx="180" ry="160" fill="#ffffff" opacity="0.15" filter="url(#glassBlur)" />
+
+  <!-- Secondary accent highlight -->
   <ellipse cx="100" cy="80" rx="120" ry="100" fill="#ffffff" opacity="0.12" filter="url(#glassBlur)" />
+
+  <!-- Scales of Justice Icon Group -->
   <g transform="translate(256, 256)">
+    <!-- Balance beam/fulcrum -->
     <rect x="-140" y="20" width="280" height="8" rx="4" fill="url(#scalesGradient)" opacity="0.95" />
+
+    <!-- Fulcrum triangle -->
     <polygon points="0,-30 -20,20 20,20" fill="url(#scalesGradient)" opacity="0.9" />
+
+    <!-- Left pan -->
     <g>
+      <!-- Pan shape (rounded rectangle) -->
       <rect x="-150" y="40" width="80" height="50" rx="8" fill="url(#scalesGradient)" opacity="0.92" />
+      <!-- Pan highlight -->
       <rect x="-148" y="42" width="76" height="15" rx="6" fill="#ffffff" opacity="0.25" />
+      <!-- Left hanging rod -->
       <line x1="-110" y1="40" x2="-110" y2="-20" stroke="url(#scalesGradient)" stroke-width="5" stroke-linecap="round" opacity="0.85" />
     </g>
+
+    <!-- Right pan -->
     <g>
+      <!-- Pan shape (rounded rectangle) -->
       <rect x="70" y="40" width="80" height="50" rx="8" fill="url(#scalesGradient)" opacity="0.92" />
+      <!-- Pan highlight -->
       <rect x="72" y="42" width="76" height="15" rx="6" fill="#ffffff" opacity="0.25" />
+      <!-- Right hanging rod -->
       <line x1="110" y1="40" x2="110" y2="-20" stroke="url(#scalesGradient)" stroke-width="5" stroke-linecap="round" opacity="0.85" />
     </g>
+
+    <!-- Center post/column -->
     <rect x="-8" y="20" width="16" height="55" rx="8" fill="url(#scalesGradient)" opacity="0.88" />
+
+    <!-- Decorative elements - small circles on pans for added detail -->
     <circle cx="-110" cy="70" r="6" fill="#ffffff" opacity="0.3" />
     <circle cx="110" cy="70" r="6" fill="#ffffff" opacity="0.3" />
+
+    <!-- Top accent line for balance beam -->
     <rect x="-140" y="14" width="280" height="3" rx="1.5" fill="#ffffff" opacity="0.4" />
   </g>
+
+  <!-- Bottom subtle reflection/light leak -->
   <ellipse cx="256" cy="420" rx="160" ry="80" fill="#7c3aed" opacity="0.15" filter="url(#glassBlur)" />
 </svg>
