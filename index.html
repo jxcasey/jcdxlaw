@@ -2414,7 +2414,16 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const mobileMenuBtn  = document.getElementById('mobile-menu-btn');
 
+        // Move sidebar to body root on mobile so z-index works above the overlay
+        function ensureSidebarAtRoot() {
+            if (window.innerWidth <= 768 && mobileSidebar.parentElement !== document.body) {
+                document.body.appendChild(mobileSidebar);
+            }
+        }
+        ensureSidebarAtRoot();
+
         function openMobileSidebar() {
+            ensureSidebarAtRoot();
             mobileSidebar.classList.add('open');
             sidebarOverlay.classList.add('active');
             mobileSidebar.style.display = 'flex';
