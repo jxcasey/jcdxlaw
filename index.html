@@ -1069,6 +1069,360 @@
             .mobile-nav-item .nav-tab-icon { font-size: 18px; }
             .page-content { padding: 10px 12px; }
         }
+
+        /* ─── FILE VIEWER OVERLAY ─── */
+        .file-viewer-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(4,4,14,0.96);
+            backdrop-filter: blur(24px);
+            display: none; flex-direction: column;
+        }
+        .file-viewer-overlay.active { display: flex; }
+        .file-viewer-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 18px;
+            padding-top: max(12px, env(safe-area-inset-top, 12px));
+            background: rgba(8,8,22,0.88);
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            flex-shrink: 0; min-height: 52px;
+        }
+        .file-viewer-title {
+            flex: 1; font-size: 14px; font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .file-viewer-body {
+            flex: 1; overflow: hidden; display: flex; flex-direction: column;
+            position: relative;
+        }
+        .file-viewer-iframe { flex: 1; border: none; width: 100%; height: 100%; background: #fff; }
+        .file-viewer-docx {
+            flex: 1; padding: 28px 24px;
+            max-width: 820px; width: 100%; margin: 0 auto;
+            color: var(--text-primary); line-height: 1.75;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            font-size: 14px;
+        }
+        .file-viewer-docx h1 { font-size: 22px; font-weight: 700; margin: 20px 0 10px; }
+        .file-viewer-docx h2 { font-size: 18px; font-weight: 600; margin: 16px 0 8px; }
+        .file-viewer-docx h3 { font-size: 15px; font-weight: 600; margin: 14px 0 6px; }
+        .file-viewer-docx p { margin: 8px 0; }
+        .file-viewer-docx ul, .file-viewer-docx ol { padding-left: 20px; margin: 8px 0; }
+        .file-viewer-docx li { margin: 4px 0; }
+        .file-viewer-docx table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+        .file-viewer-docx td, .file-viewer-docx th { border: 1px solid var(--border); padding: 8px 10px; font-size: 13px; }
+        .file-viewer-docx strong { font-weight: 700; }
+        .file-viewer-docx em { font-style: italic; }
+        .file-viewer-unsupported {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 16px; padding: 40px; text-align: center;
+        }
+
+        /* ─── MATERIALS PANEL ─── */
+        .materials-upload-zone {
+            display: flex; flex-direction: column; align-items: center;
+            border: 1.5px dashed rgba(124,92,252,0.4);
+            border-radius: 14px; padding: 22px 16px;
+            text-align: center; cursor: pointer;
+            transition: all 0.2s; background: rgba(124,92,252,0.04);
+            margin-top: 10px;
+        }
+        .materials-upload-zone:hover, .materials-upload-zone.drag-over {
+            border-color: rgba(124,92,252,0.8);
+            background: rgba(124,92,252,0.1);
+        }
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px; margin-bottom: 12px;
+        }
+        .material-card {
+            background: var(--surface); border: 0.5px solid var(--border);
+            border-radius: 12px; padding: 14px 12px;
+            cursor: pointer; transition: all 0.22s;
+            display: flex; flex-direction: column; gap: 7px;
+            position: relative; overflow: hidden;
+        }
+        .material-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        .material-card:hover { background: var(--surface-hover); transform: translateY(-2px); box-shadow: var(--shadow-mid); }
+        .material-card:active { transform: translateY(0); }
+        .material-card-icon { font-size: 30px; line-height: 1; }
+        .material-card-name {
+            font-size: 12px; font-weight: 600; color: var(--text-primary);
+            word-break: break-word; line-height: 1.35; display: -webkit-box;
+            -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .material-card-meta { font-size: 10px; color: var(--text-tertiary); margin-top: auto; }
+        .material-card-delete {
+            position: absolute; top: 7px; right: 7px; width: 22px; height: 22px;
+            border-radius: 50%; background: rgba(239,68,68,0.18); border: none;
+            color: #ef4444; font-size: 11px; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            line-height: 1; padding: 0;
+        }
+        .material-card:hover .material-card-delete { display: flex; }
+        @media (max-width: 768px) {
+            .materials-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .material-card-delete { display: flex; }
+        }
+
+        /* ══════════════════════════════════════════════════════════════
+           DESKTOP — visionOS Liquid Glass aesthetic
+           Everything below only fires on screens ≥ 769px.
+           iPhone/mobile is completely unaffected.
+        ══════════════════════════════════════════════════════════════ */
+        @media (min-width: 769px) {
+
+            /* ── Background: deeper, richer — orbs are the colour source ── */
+            .bg-mesh {
+                background:
+                    radial-gradient(ellipse at 12% 20%, rgba(72,30,160,0.72) 0%, transparent 52%),
+                    radial-gradient(ellipse at 88% 80%, rgba(20,55,145,0.58) 0%, transparent 52%),
+                    radial-gradient(ellipse at 55% 8%,  rgba(110,50,220,0.35) 0%, transparent 44%),
+                    radial-gradient(ellipse at 20% 88%, rgba(30,80,200,0.28) 0%, transparent 44%),
+                    radial-gradient(ellipse at 50% 50%, rgba(8,8,26,0.55) 0%, transparent 80%),
+                    linear-gradient(160deg, #03030e 0%, #06061a 45%, #03030f 100%);
+            }
+
+            /* Orbs: vivid — they MUST bleed through glass */
+            .bg-orb-1 {
+                width: 750px; height: 750px;
+                background: radial-gradient(circle, rgba(100,60,255,0.62) 0%, transparent 68%);
+                opacity: 0.85;
+            }
+            .bg-orb-2 {
+                width: 620px; height: 620px;
+                background: radial-gradient(circle, rgba(40,100,255,0.52) 0%, transparent 68%);
+                opacity: 0.75;
+            }
+            .bg-orb-3 {
+                width: 480px; height: 480px;
+                background: radial-gradient(circle, rgba(140,60,255,0.45) 0%, transparent 68%);
+                opacity: 0.65;
+            }
+            .bg-orb-4 {
+                width: 400px; height: 400px;
+                background: radial-gradient(circle, rgba(20,120,255,0.38) 0%, transparent 68%);
+                opacity: 0.55;
+            }
+
+            /* ── Sidebar: frosted glass anchor ── */
+            /* Slightly more opaque than cards — the visual anchor of the window */
+            .sidebar {
+                background: rgba(10,8,28,0.36);
+                backdrop-filter: blur(90px) saturate(300%) brightness(1.18);
+                -webkit-backdrop-filter: blur(90px) saturate(300%) brightness(1.18);
+                border-right: 0.5px solid rgba(255,255,255,0.1);
+                box-shadow:
+                    4px 0 60px rgba(0,0,0,0.22),
+                    inset -0.5px 0 0 rgba(255,255,255,0.08),
+                    inset 1px 0 0 rgba(124,92,252,0.06);
+            }
+            .logo-area {
+                background: rgba(255,255,255,0.04);
+                border-color: rgba(255,255,255,0.07);
+            }
+            .nav-item {
+                border-radius: 10px;
+                transition: background 0.18s, box-shadow 0.18s;
+            }
+            .nav-item:hover {
+                background: rgba(255,255,255,0.06);
+                box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12);
+            }
+
+            /* ── Page header: near-invisible ── */
+            .page-header {
+                background: rgba(255,255,255,0.014);
+                backdrop-filter: blur(40px) saturate(180%);
+                -webkit-backdrop-filter: blur(40px) saturate(180%);
+                border-bottom: 0.5px solid rgba(255,255,255,0.055);
+                box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 4px 24px rgba(0,0,0,0.08);
+            }
+
+            /* ── Glass cards: barely-there surface ── */
+            /* The card IS the blur — not a coloured tile */
+            .glass-card {
+                background: rgba(255,255,255,0.022);
+                backdrop-filter: blur(70px) saturate(220%) brightness(1.06);
+                -webkit-backdrop-filter: blur(70px) saturate(220%) brightness(1.06);
+                border: 0.5px solid rgba(255,255,255,0.075);
+                border-radius: 22px;
+                box-shadow:
+                    0 2px 8px  rgba(0,0,0,0.18),
+                    0 8px 32px rgba(0,0,0,0.22),
+                    0 24px 64px rgba(0,0,0,0.16),
+                    inset 0 1px 0 rgba(255,255,255,0.11),
+                    inset 0 -0.5px 0 rgba(0,0,0,0.08);
+            }
+            .glass-card::before {
+                background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
+                height: 48%;
+            }
+            .glass-card::after {
+                background: linear-gradient(90deg, transparent 8%, rgba(255,255,255,0.32) 50%, transparent 92%);
+            }
+
+            /* ── Stat cards ── */
+            .stat-card {
+                background: rgba(255,255,255,0.028);
+                backdrop-filter: blur(60px) saturate(200%) brightness(1.06);
+                -webkit-backdrop-filter: blur(60px) saturate(200%) brightness(1.06);
+                border-color: rgba(255,255,255,0.07);
+                box-shadow:
+                    0 2px 8px rgba(0,0,0,0.16),
+                    0 8px 28px rgba(0,0,0,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.1);
+            }
+
+            /* ── Module / note cards ── */
+            .module-card, .note-card {
+                background: rgba(255,255,255,0.022);
+                backdrop-filter: blur(60px) saturate(200%);
+                -webkit-backdrop-filter: blur(60px) saturate(200%);
+                border-color: rgba(255,255,255,0.07);
+            }
+
+            /* ── Surface variables ── */
+            --surface:        rgba(255,255,255,0.032);
+            --surface-hover:  rgba(255,255,255,0.058);
+            --surface-active: rgba(255,255,255,0.08);
+            --border:         rgba(255,255,255,0.075);
+            --border-hover:   rgba(255,255,255,0.13);
+
+            /* ── Modal: highest elevation ── */
+            .modal {
+                background: rgba(8,6,24,0.62);
+                backdrop-filter: blur(120px) saturate(260%) brightness(1.12);
+                -webkit-backdrop-filter: blur(120px) saturate(260%) brightness(1.12);
+                border: 0.5px solid rgba(255,255,255,0.14);
+                border-radius: 28px;
+                box-shadow:
+                    0 8px 32px  rgba(0,0,0,0.4),
+                    0 32px 80px rgba(0,0,0,0.35),
+                    0 64px 120px rgba(0,0,0,0.25),
+                    inset 0 1px 0 rgba(255,255,255,0.2),
+                    inset 0 -0.5px 0 rgba(0,0,0,0.15);
+            }
+
+            /* ── Buttons ── */
+            .btn-secondary {
+                background: rgba(255,255,255,0.055);
+                border-color: rgba(255,255,255,0.1);
+                backdrop-filter: blur(20px);
+            }
+            .btn-secondary:hover {
+                background: rgba(255,255,255,0.09);
+                border-color: rgba(255,255,255,0.16);
+            }
+            .btn-primary {
+                box-shadow: 0 4px 20px rgba(124,92,252,0.45), 0 0 0 0.5px rgba(255,255,255,0.12) inset;
+            }
+
+            /* ── Filter pills ── */
+            .filter-pill {
+                background: rgba(255,255,255,0.04);
+                border-color: rgba(255,255,255,0.08);
+                backdrop-filter: blur(20px);
+            }
+            .filter-pill:hover { background: rgba(255,255,255,0.07); }
+            .filter-pill.active {
+                background: rgba(124,92,252,0.18);
+                border-color: rgba(124,92,252,0.32);
+                box-shadow: 0 0 16px rgba(124,92,252,0.2);
+            }
+
+            /* ── Theme toggle ── */
+            .theme-toggle {
+                background: rgba(255,255,255,0.05);
+                border-color: rgba(255,255,255,0.1);
+                backdrop-filter: blur(20px);
+            }
+
+            /* ── Form inputs ── */
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                background: rgba(255,255,255,0.04);
+                border-color: rgba(255,255,255,0.08);
+                backdrop-filter: blur(20px);
+            }
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                background: rgba(255,255,255,0.065);
+                border-color: rgba(124,92,252,0.45);
+                box-shadow: 0 0 0 3px rgba(124,92,252,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+            }
+
+            /* ── Table rows ── */
+            table thead th {
+                background: rgba(255,255,255,0.025);
+                border-bottom-color: rgba(255,255,255,0.07);
+            }
+            table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+            /* ── Time slots (timetable) ── */
+            .time-slot {
+                background: rgba(255,255,255,0.02);
+                border-color: rgba(255,255,255,0.06);
+                backdrop-filter: blur(30px);
+            }
+            .time-slot.has-class {
+                background: rgba(255,255,255,0.04);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+            }
+
+            /* ── Reference output ── */
+            .reference-output {
+                background: rgba(255,255,255,0.02);
+                border-color: rgba(255,255,255,0.07);
+                backdrop-filter: blur(40px);
+            }
+
+            /* ── Material cards ── */
+            .material-card {
+                background: rgba(255,255,255,0.028);
+                border-color: rgba(255,255,255,0.07);
+                backdrop-filter: blur(40px);
+            }
+            .material-card:hover {
+                background: rgba(255,255,255,0.052);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+            }
+
+            /* ── Upload zone ── */
+            .materials-upload-zone {
+                background: rgba(124,92,252,0.03);
+                border-color: rgba(124,92,252,0.25);
+                backdrop-filter: blur(30px);
+            }
+            .materials-upload-zone:hover {
+                background: rgba(124,92,252,0.07);
+                border-color: rgba(124,92,252,0.55);
+                box-shadow: 0 0 24px rgba(124,92,252,0.12);
+            }
+
+            /* ── Sidebar bottom row ── */
+            .sidebar-bottom-row button,
+            .sidebar-bottom-row .theme-toggle {
+                background: rgba(255,255,255,0.04);
+                border-color: rgba(255,255,255,0.08);
+            }
+
+            /* ── Shadow variables ── */
+            --shadow-low:   0 2px 8px rgba(0,0,0,0.2),  inset 0 1px 0 rgba(255,255,255,0.08);
+            --shadow-mid:   0 4px 20px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.1);
+            --shadow-high:  0 8px 32px rgba(0,0,0,0.3),  0 24px 60px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.12);
+            --shadow-hover: 0 12px 48px rgba(0,0,0,0.38), 0 32px 80px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.14);
+
+        } /* end @media desktop */
+
     </style>
 </head>
 <body>
@@ -1346,6 +1700,171 @@
         };
 
         const APP_VERSION = '3.2';
+
+        // ════════════════════════════════════════════════════════════════
+        // FILE STORAGE — IndexedDB (per-device, no size limit like localStorage)
+        // ════════════════════════════════════════════════════════════════
+        const FILE_DB_NAME = 'jcdxlaw_files';
+        let _fileDB = null;
+
+        function openFileDB() {
+            return new Promise((res, rej) => {
+                if (_fileDB) { res(_fileDB); return; }
+                const req = indexedDB.open(FILE_DB_NAME, 1);
+                req.onupgradeneeded = e => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('files')) {
+                        const store = db.createObjectStore('files', { keyPath: 'id' });
+                        store.createIndex('moduleId', 'moduleId', { unique: false });
+                    }
+                };
+                req.onsuccess = e => { _fileDB = e.target.result; res(_fileDB); };
+                req.onerror = e => rej(e.target.error);
+            });
+        }
+        function dbSaveFile(moduleId, file) {
+            return new Promise((res, rej) => {
+                const reader = new FileReader();
+                reader.onload = async e => {
+                    try {
+                        const db = await openFileDB();
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        const record = {
+                            id: 'f-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+                            moduleId, name: file.name, ext,
+                            type: file.type || 'application/' + ext,
+                            size: file.size, data: e.target.result,
+                            uploadedAt: new Date().toISOString()
+                        };
+                        const tx = db.transaction('files', 'readwrite');
+                        tx.objectStore('files').add(record);
+                        tx.oncomplete = () => res(record);
+                        tx.onerror = ev => rej(ev.target.error);
+                    } catch(err) { rej(err); }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        function dbGetModuleFiles(moduleId) {
+            return new Promise(async (res, rej) => {
+                try {
+                    const db = await openFileDB();
+                    const tx = db.transaction('files', 'readonly');
+                    const req = tx.objectStore('files').index('moduleId').getAll(moduleId);
+                    req.onsuccess = e => res(e.target.result || []);
+                    req.onerror = e => rej(e.target.error);
+                } catch(err) { rej(err); }
+            });
+        }
+        function dbGetFile(id) {
+            return new Promise(async (res, rej) => {
+                try {
+                    const db = await openFileDB();
+                    const tx = db.transaction('files', 'readonly');
+                    const req = tx.objectStore('files').get(id);
+                    req.onsuccess = e => res(e.target.result);
+                    req.onerror = e => rej(e.target.error);
+                } catch(err) { rej(err); }
+            });
+        }
+        function dbDeleteFile(id) {
+            return new Promise(async (res, rej) => {
+                try {
+                    const db = await openFileDB();
+                    const tx = db.transaction('files', 'readwrite');
+                    tx.objectStore('files').delete(id);
+                    tx.oncomplete = () => res();
+                    tx.onerror = e => rej(e.target.error);
+                } catch(err) { rej(err); }
+            });
+        }
+        function fmtSize(b) {
+            if (b < 1024) return b + 'B';
+            if (b < 1048576) return (b/1024).toFixed(1) + 'KB';
+            return (b/1048576).toFixed(1) + 'MB';
+        }
+        function fileIcon(ext) {
+            return {pdf:'📄',docx:'📝',doc:'📝',pptx:'📊',ppt:'📊',xlsx:'📋',xls:'📋',png:'🖼',jpg:'🖼',jpeg:'🖼'}[ext] || '📁';
+        }
+        function renderMaterialsContent(moduleId, files) {
+            const grid = files.length ? `<div class="materials-grid">
+                ${files.map(f => `
+                <div class="material-card" data-action="open-file" data-file-id="${f.id}">
+                    <button class="material-card-delete" data-action="delete-file" data-file-id="${f.id}" title="Remove">✕</button>
+                    <div class="material-card-icon">${fileIcon(f.ext)}</div>
+                    <div class="material-card-name">${f.name}</div>
+                    <div class="material-card-meta">${fmtSize(f.size)} · ${new Date(f.uploadedAt).toLocaleDateString('en-ZA',{day:'numeric',month:'short'})}</div>
+                </div>`).join('')}
+            </div>` : '';
+            return `${grid}
+            <label class="materials-upload-zone" for="fu-${moduleId}">
+                <div style="font-size:32px;margin-bottom:6px;opacity:0.7;">+</div>
+                <div style="font-size:13px;font-weight:600;color:var(--primary);">Add Files</div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;">PDF · DOCX · PPTX and more</div>
+                <input type="file" id="fu-${moduleId}" data-module-id="${moduleId}"
+                    accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.png,.jpg,.jpeg"
+                    multiple style="display:none;">
+            </label>`;
+        }
+
+        // ─── FILE VIEWER ──────────────────────────────────────────────
+        let _viewerBlobUrl = null;
+        function openFileViewer(record) {
+            const overlay = document.getElementById('file-viewer');
+            const titleEl = document.getElementById('file-viewer-title');
+            const bodyEl  = document.getElementById('file-viewer-body');
+            const dlBtn   = document.getElementById('file-viewer-download');
+            titleEl.textContent = record.name;
+            bodyEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-tertiary);">Loading…</div>';
+            overlay.classList.add('active');
+            // Download handler
+            dlBtn.onclick = () => {
+                const blob = new Blob([record.data], { type: record.type });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = record.name; a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+            };
+            const ext = record.ext;
+            if (ext === 'pdf') {
+                const blob = new Blob([record.data], { type: 'application/pdf' });
+                _viewerBlobUrl = URL.createObjectURL(blob);
+                bodyEl.innerHTML = `<iframe class="file-viewer-iframe" src="${_viewerBlobUrl}"></iframe>`;
+            } else if (ext === 'docx' || ext === 'doc') {
+                bodyEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-tertiary);">Converting document…</div>';
+                const renderDoc = () => {
+                    window.mammoth.convertToHtml({ arrayBuffer: record.data })
+                        .then(r => { bodyEl.innerHTML = `<div class="file-viewer-docx">${r.value}</div>`; })
+                        .catch(e => { bodyEl.innerHTML = `<div style="padding:40px;color:#ef4444;">Could not render: ${e.message}</div>`; });
+                };
+                if (window.mammoth) { renderDoc(); } else {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+                    s.onload = renderDoc; document.head.appendChild(s);
+                }
+            } else if (ext === 'pptx' || ext === 'ppt') {
+                bodyEl.innerHTML = `<div class="file-viewer-unsupported">
+                    <div style="font-size:64px;">📊</div>
+                    <div style="font-size:18px;font-weight:700;color:var(--text-primary);">${record.name}</div>
+                    <div style="font-size:13px;color:var(--text-secondary);max-width:320px;line-height:1.6;">
+                        PowerPoint can't be rendered inside the app. Tap Save to download it and open in Keynote or PowerPoint.
+                    </div>
+                    <button class="btn btn-primary" id="pptx-dl">↓ Save to Files</button>
+                </div>`;
+                document.getElementById('pptx-dl').onclick = dlBtn.onclick;
+            } else {
+                bodyEl.innerHTML = `<div class="file-viewer-unsupported">
+                    <div style="font-size:64px;">${fileIcon(ext)}</div>
+                    <div style="font-size:18px;font-weight:700;color:var(--text-primary);">${record.name}</div>
+                    <button class="btn btn-primary" onclick="document.getElementById('file-viewer-download').click()">↓ Save to Files</button>
+                </div>`;
+            }
+        }
+        function closeFileViewer() {
+            document.getElementById('file-viewer').classList.remove('active');
+            document.getElementById('file-viewer-body').innerHTML = '';
+            if (_viewerBlobUrl) { URL.revokeObjectURL(_viewerBlobUrl); _viewerBlobUrl = null; }
+        }
+
         let currentPage = 'dashboard';
         let currentModuleId = null;
         let currentRefType = null;
@@ -1854,7 +2373,28 @@
                         <a href="${settings.socsciUrl}/course/view.php?id=${mod.socsciId}" target="_blank" class="btn btn-secondary btn-small">Open in SocSciLearn →</a>` : ''}
                     </div>
                 </div>
+
+                <!-- ─── MATERIALS ─── -->
+                <div class="glass-card stagger-item" style="--i:6;">
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:14px;">📁 Materials</div>
+                    <div id="mat-${mod.id}"><div style="color:var(--text-tertiary);font-size:13px;">Loading…</div></div>
+                </div>
+
             </div>`;
+
+            // Async: fill materials panel after DOM renders
+            (function(modId) {
+                setTimeout(async () => {
+                    const el = document.getElementById('mat-' + modId);
+                    if (!el) return;
+                    try {
+                        const files = await dbGetModuleFiles(modId);
+                        el.innerHTML = renderMaterialsContent(modId, files);
+                    } catch(e) {
+                        el.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Could not load files.</div>';
+                    }
+                }, 80);
+            })(mod.id);
         }
 
         // ─── CITATION TOOL LOGIC ──────────────────────────────
@@ -2386,9 +2926,50 @@
                     if (sub) sub.classList.toggle('open');
                     return;
                 }
+                // File viewer close
+                if (e.target.closest('#file-viewer-close')) {
+                    closeFileViewer();
+                    return;
+                }
+                // Delete file from materials panel
+                const delBtn = e.target.closest('[data-action="delete-file"]');
+                if (delBtn) {
+                    e.stopPropagation();
+                    if (confirm('Remove this file from the app?')) {
+                        const id = delBtn.dataset.fileId;
+                        dbDeleteFile(id).then(() => {
+                            delBtn.closest('.material-card')?.remove();
+                        });
+                    }
+                    return;
+                }
+                // Open file in viewer
+                const fileCard = e.target.closest('[data-action="open-file"]');
+                if (fileCard && !e.target.closest('[data-action="delete-file"]')) {
+                    dbGetFile(fileCard.dataset.fileId).then(rec => { if (rec) openFileViewer(rec); });
+                    return;
+                }
             });
             // Single delegated change handler
             document.addEventListener('change', function(e) {
+                // File upload input
+                const fileInput = e.target.closest('input[type="file"][data-module-id]');
+                if (fileInput && fileInput.files.length > 0) {
+                    const moduleId = fileInput.dataset.moduleId;
+                    const files = Array.from(fileInput.files);
+                    const container = document.getElementById('mat-' + moduleId);
+                    if (container) container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Saving ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '…</div>';
+                    Promise.all(files.map(f => dbSaveFile(moduleId, f)))
+                        .then(() => dbGetModuleFiles(moduleId))
+                        .then(allFiles => {
+                            if (container) container.innerHTML = renderMaterialsContent(moduleId, allFiles);
+                        })
+                        .catch(err => {
+                            alert('Error saving files: ' + err.message);
+                            if (container) container.innerHTML = renderMaterialsContent(moduleId, []);
+                        });
+                    return;
+                }
                 // Assignment status dropdown
                 const statusSel = e.target.closest('.status-select');
                 if (statusSel) {
@@ -2492,5 +3073,17 @@
             navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW registration failed:',e));
         }
     </script>
+
+    <!-- ─── FILE VIEWER OVERLAY ─── -->
+    <div class="file-viewer-overlay" id="file-viewer">
+        <div class="file-viewer-bar">
+            <div class="mobile-icon-btn" id="file-viewer-close" style="cursor:pointer;flex-shrink:0;">✕</div>
+            <div class="file-viewer-title" id="file-viewer-title">Document</div>
+            <button class="btn btn-secondary btn-small" id="file-viewer-download">↓ Save</button>
+        </div>
+        <div class="file-viewer-body" id="file-viewer-body">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-tertiary);">Loading…</div>
+        </div>
+    </div>
 </body>
 </html>
