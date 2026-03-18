@@ -156,11 +156,14 @@
         .app-container {
             position: relative; z-index: 1;
             display: flex; width: 100%; height: 100vh;
+            margin-left: 260px;
         }
 
         /* ─── SIDEBAR ─── */
         .sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0;
             width: 260px; min-width: 260px;
+            z-index: 100;
             background: rgba(8,8,22,0.72);
             backdrop-filter: blur(80px) saturate(240%) brightness(1.08);
             -webkit-backdrop-filter: blur(80px) saturate(240%) brightness(1.08);
@@ -868,6 +871,7 @@
             .app-container {
                 flex-direction: column;
                 height: 100dvh;
+                margin-left: 0 !important;
             }
 
             /* ── Sidebar: slides in from left as a drawer ── */
@@ -875,7 +879,7 @@
                 position: fixed;
                 top: 0; left: -280px; bottom: 0;
                 width: 280px; height: 100dvh;
-                z-index: 300;
+                z-index: 500;
                 transition: left 0.32s var(--ease-out);
                 padding-bottom: env(safe-area-inset-bottom, 0px);
             }
@@ -886,7 +890,7 @@
                 display: block;
                 position: fixed; inset: 0;
                 background: rgba(0,0,0,0.5);
-                z-index: 299;
+                z-index: 400;
                 opacity: 0; pointer-events: none;
                 transition: opacity 0.3s;
             }
@@ -1090,8 +1094,8 @@
         </div>
     </div>
 
-    <div class="app-container">
-        <div class="sidebar">
+    <!-- Sidebar lives at body root — outside app-container to avoid z-index stacking context trap -->
+    <div class="sidebar" id="sidebar">
             <div class="logo-area">
                 <div class="logo-icon">⚖</div>
                 <div>
@@ -1125,8 +1129,9 @@
                     <div class="theme-toggle" data-action="theme">☽</div>
                 </div>
             </div>
-        </div>
+    </div>
 
+    <div class="app-container">
         <div class="main-content">
             <div id="page-header" class="page-header"></div>
             <div id="page-content" class="page-content"></div>
@@ -1467,8 +1472,9 @@
             const today = new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             const activeAssessments = assessments.filter(a => getDaysUntil(a.date) > 0).length;
             const pendingAssignments = assignments.filter(a => a.status !== 'Graded').length;
-            const dayMap = { 0:'Sunday',1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday' };
-            const todayClasses = timetable.filter(c => c.day === dayMap[new Date().getDay()]);
+            // Use locale-aware day name — consistent with the date header above
+            const todayDayName = new Date().toLocaleDateString('en-ZA', { weekday: 'long' });
+            const todayClasses = timetable.filter(c => c.day === todayDayName);
             const totalTopics = modules.reduce((sum, m) => sum + (MODULE_CONTENT[m.name]?.topics?.length || 0), 0);
 
             return `
@@ -2414,16 +2420,7 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const mobileMenuBtn  = document.getElementById('mobile-menu-btn');
 
-        // Move sidebar to body root on mobile so z-index works above the overlay
-        function ensureSidebarAtRoot() {
-            if (window.innerWidth <= 768 && mobileSidebar.parentElement !== document.body) {
-                document.body.appendChild(mobileSidebar);
-            }
-        }
-        ensureSidebarAtRoot();
-
         function openMobileSidebar() {
-            ensureSidebarAtRoot();
             mobileSidebar.classList.add('open');
             sidebarOverlay.classList.add('active');
             mobileSidebar.style.display = 'flex';
