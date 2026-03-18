@@ -28,8 +28,8 @@
             --border: rgba(255,255,255,0.09);
             --border-hover: rgba(255,255,255,0.16);
             --text-primary: #f0f0f8;
-            --text-secondary: #8a8aaa;
-            --text-tertiary: #52526a;
+            --text-secondary: #b0b0cc;
+            --text-tertiary: #7878a0;
             --accent-1: #6366f1;
             --accent-2: #3b82f6;
             --accent-3: #10b981;
@@ -1136,6 +1136,7 @@
             text-align: center; cursor: pointer;
             transition: all 0.2s; background: rgba(124,92,252,0.04);
             margin-top: 10px;
+            position: relative; overflow: hidden; /* required for input overlay */
         }
         .materials-upload-zone:hover, .materials-upload-zone.drag-over {
             border-color: rgba(124,92,252,0.8);
@@ -1190,42 +1191,42 @@
             /* ── Background: deeper, richer — orbs are the colour source ── */
             .bg-mesh {
                 background:
-                    radial-gradient(ellipse at 12% 20%, rgba(88,30,200,0.85) 0%, transparent 50%),
-                    radial-gradient(ellipse at 88% 78%, rgba(20,60,180,0.70) 0%, transparent 50%),
-                    radial-gradient(ellipse at 55% 5%,  rgba(130,50,255,0.45) 0%, transparent 42%),
-                    radial-gradient(ellipse at 22% 90%, rgba(30,90,230,0.35) 0%, transparent 42%),
-                    radial-gradient(ellipse at 50% 50%, rgba(4,4,18,0.65) 0%, transparent 78%),
-                    linear-gradient(160deg, #010108 0%, #040414 45%, #010109 100%);
+                    radial-gradient(ellipse at 12% 20%, rgba(70,30,160,0.55) 0%, transparent 52%),
+                    radial-gradient(ellipse at 88% 78%, rgba(20,50,140,0.42) 0%, transparent 52%),
+                    radial-gradient(ellipse at 55% 5%,  rgba(90,40,180,0.28) 0%, transparent 44%),
+                    radial-gradient(ellipse at 22% 90%, rgba(25,65,170,0.22) 0%, transparent 44%),
+                    radial-gradient(ellipse at 50% 50%, rgba(6,6,22,0.55) 0%, transparent 80%),
+                    linear-gradient(160deg, #04040f 0%, #06061a 45%, #04040f 100%);
             }
 
             /* Orbs: vivid — they MUST bleed through glass */
             .bg-orb-1 {
                 width: 800px; height: 800px;
-                background: radial-gradient(circle, rgba(110,50,255,0.75) 0%, rgba(80,30,200,0.4) 45%, transparent 70%);
-                opacity: 0.92;
+                background: radial-gradient(circle, rgba(100,55,240,0.55) 0%, rgba(70,30,180,0.25) 52%, transparent 72%);
+                opacity: 0.52;
             }
             .bg-orb-2 {
                 width: 680px; height: 680px;
-                background: radial-gradient(circle, rgba(30,90,255,0.65) 0%, rgba(20,60,200,0.35) 45%, transparent 70%);
-                opacity: 0.82;
+                background: radial-gradient(circle, rgba(30,80,220,0.48) 0%, rgba(20,55,180,0.22) 52%, transparent 72%);
+                opacity: 0.44;
             }
             .bg-orb-3 {
                 width: 520px; height: 520px;
-                background: radial-gradient(circle, rgba(160,50,255,0.55) 0%, rgba(100,30,200,0.3) 45%, transparent 70%);
-                opacity: 0.72;
+                background: radial-gradient(circle, rgba(140,55,240,0.42) 0%, rgba(90,30,180,0.2) 52%, transparent 72%);
+                opacity: 0.36;
             }
             .bg-orb-4 {
                 width: 440px; height: 440px;
-                background: radial-gradient(circle, rgba(20,130,255,0.48) 0%, rgba(10,80,200,0.28) 45%, transparent 70%);
-                opacity: 0.62;
+                background: radial-gradient(circle, rgba(20,110,240,0.35) 0%, rgba(10,70,180,0.18) 52%, transparent 72%);
+                opacity: 0.28;
             }
 
             /* ── Sidebar: frosted glass anchor ── */
             /* Slightly more opaque than cards — the visual anchor of the window */
             .sidebar {
-                background: rgba(10,8,28,0.36);
-                backdrop-filter: blur(90px) saturate(300%) brightness(1.18);
-                -webkit-backdrop-filter: blur(90px) saturate(300%) brightness(1.18);
+                background: rgba(8,6,22,0.72);
+                backdrop-filter: blur(90px) saturate(160%) brightness(1.10);
+                -webkit-backdrop-filter: blur(90px) saturate(160%) brightness(1.10);
                 border-right: 0.5px solid rgba(255,255,255,0.1);
                 box-shadow:
                     4px 0 60px rgba(0,0,0,0.22),
@@ -1257,10 +1258,10 @@
             /* ── Glass cards: barely-there surface ── */
             /* The card IS the blur — not a coloured tile */
             .glass-card {
-                background: rgba(255,255,255,0.018);
-                backdrop-filter: blur(80px) saturate(240%) brightness(1.08);
-                -webkit-backdrop-filter: blur(80px) saturate(240%) brightness(1.08);
-                border: 0.5px solid rgba(255,255,255,0.09);
+                background: rgba(255,255,255,0.055);
+                backdrop-filter: blur(80px) saturate(150%) brightness(1.06);
+                -webkit-backdrop-filter: blur(80px) saturate(150%) brightness(1.06);
+                border: 0.5px solid rgba(255,255,255,0.11);
                 border-radius: 22px;
                 box-shadow:
                     0 1px 1px  rgba(0,0,0,0.12),
@@ -1282,10 +1283,10 @@
 
             /* ── Stat cards ── */
             .stat-card {
-                background: rgba(255,255,255,0.024);
-                backdrop-filter: blur(70px) saturate(220%) brightness(1.08);
-                -webkit-backdrop-filter: blur(70px) saturate(220%) brightness(1.08);
-                border-color: rgba(255,255,255,0.09);
+                background: rgba(255,255,255,0.06);
+                backdrop-filter: blur(70px) saturate(145%) brightness(1.06);
+                -webkit-backdrop-filter: blur(70px) saturate(145%) brightness(1.06);
+                border-color: rgba(255,255,255,0.12);
                 box-shadow:
                     0 2px 8px rgba(0,0,0,0.2),
                     0 8px 32px rgba(0,0,0,0.28),
@@ -1295,10 +1296,10 @@
 
             /* ── Module / note cards ── */
             .module-card, .note-card {
-                background: rgba(255,255,255,0.018);
-                backdrop-filter: blur(75px) saturate(230%);
-                -webkit-backdrop-filter: blur(75px) saturate(230%);
-                border-color: rgba(255,255,255,0.09);
+                background: rgba(255,255,255,0.052);
+                backdrop-filter: blur(75px) saturate(150%);
+                -webkit-backdrop-filter: blur(75px) saturate(150%);
+                border-color: rgba(255,255,255,0.11);
                 box-shadow:
                     0 4px 16px rgba(0,0,0,0.26),
                     0 16px 48px rgba(0,0,0,0.3),
@@ -1449,22 +1450,23 @@
             ══════════════════════════════════════════════════════════════ */
 
             /* Card spotlight layer — radial light follows cursor position */
+            /* Default spotlight is off-card (-200%) — only appears when cursor enters */
             .glass-card {
                 background-image: radial-gradient(
-                    circle at var(--cx, 50%) var(--cy, 50%),
-                    rgba(255,255,255,0.07) 0%, transparent 60%
+                    circle at var(--cx, -200%) var(--cy, -200%),
+                    rgba(255,255,255,0.10) 0%, transparent 55%
                 );
             }
             .stat-card {
                 background-image: radial-gradient(
-                    circle at var(--cx, 50%) var(--cy, 50%),
-                    rgba(255,255,255,0.065) 0%, transparent 60%
+                    circle at var(--cx, -200%) var(--cy, -200%),
+                    rgba(255,255,255,0.09) 0%, transparent 55%
                 );
             }
             .module-card, .note-card {
                 background-image: radial-gradient(
-                    circle at var(--cx, 50%) var(--cy, 50%),
-                    rgba(255,255,255,0.06) 0%, transparent 60%
+                    circle at var(--cx, -200%) var(--cy, -200%),
+                    rgba(255,255,255,0.085) 0%, transparent 55%
                 );
             }
 
@@ -1892,7 +1894,8 @@
                 <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;">PDF · DOCX · PPTX and more</div>
                 <input type="file" id="fu-${moduleId}" data-module-id="${moduleId}"
                     accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.png,.jpg,.jpeg"
-                    multiple style="display:none;">
+                    multiple
+                    style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;">
             </label>`;
         }
 
@@ -3074,6 +3077,31 @@
                 const modFilter = e.target.closest('[data-module-filter]');
                 if (modFilter) { renderPage(); return; }
             });
+
+            // Drag-and-drop onto upload zones
+            document.addEventListener('dragover', (e) => {
+                const zone = e.target.closest('.materials-upload-zone');
+                if (zone) { e.preventDefault(); zone.classList.add('drag-over'); }
+            });
+            document.addEventListener('dragleave', (e) => {
+                const zone = e.target.closest('.materials-upload-zone');
+                if (zone && !zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+            });
+            document.addEventListener('drop', (e) => {
+                const zone = e.target.closest('.materials-upload-zone');
+                if (!zone) return;
+                e.preventDefault(); zone.classList.remove('drag-over');
+                const moduleId = zone.querySelector('input[data-module-id]')?.dataset.moduleId;
+                if (!moduleId) return;
+                const files = Array.from(e.dataTransfer.files);
+                if (!files.length) return;
+                const container = document.getElementById('mat-' + moduleId);
+                if (container) container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Saving ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '…</div>';
+                Promise.all(files.map(f => dbSaveFile(moduleId, f)))
+                    .then(() => dbGetModuleFiles(moduleId))
+                    .then(allFiles => { if (container) container.innerHTML = renderMaterialsContent(moduleId, allFiles); })
+                    .catch(err => { if (container) container.innerHTML = renderMaterialsContent(moduleId, []); });
+            });
         }
         // Legacy no-op — kept so any accidental call doesn't throw
         function attachEventListeners() {}
@@ -3112,6 +3140,11 @@
 
                     // ── Card spotlight + perspective tilt ──────────────────────
                     document.querySelectorAll(CARDS).forEach(card => {
+                        // Ensure default is off-card until cursor enters
+                        if (!card.style.getPropertyValue('--cx')) {
+                            card.style.setProperty('--cx', '-200%');
+                            card.style.setProperty('--cy', '-200%');
+                        }
                         const r  = card.getBoundingClientRect();
                         const lx = curX - r.left, ly = curY - r.top;
                         // Spotlight position as % of card dimensions
