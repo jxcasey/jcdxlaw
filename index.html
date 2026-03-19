@@ -1888,15 +1888,11 @@
                 </div>`).join('')}
             </div>` : '';
             return `${grid}
-            <label class="materials-upload-zone" for="fu-${moduleId}">
-                <div style="font-size:32px;margin-bottom:6px;opacity:0.7;">+</div>
-                <div style="font-size:13px;font-weight:600;color:var(--primary);">Add Files</div>
-                <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;">PDF · DOCX · PPTX and more</div>
-                <input type="file" id="fu-${moduleId}" data-module-id="${moduleId}"
-                    accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.png,.jpg,.jpeg"
-                    multiple
-                    style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;">
-            </label>`;
+            <div class="materials-upload-zone" data-action="upload-files" data-module-id="${moduleId}">
+                <div style="font-size:28px;margin-bottom:6px;opacity:0.7;pointer-events:none;">+</div>
+                <div style="font-size:13px;font-weight:600;color:var(--primary);pointer-events:none;">Add Files</div>
+                <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;pointer-events:none;">PDF · DOCX · PPTX · drag and drop</div>
+            </div>`;
         }
 
         // ─── FILE VIEWER ──────────────────────────────────────────────
@@ -2963,6 +2959,33 @@
                         case 'view-module': navigate('module-detail', actionEl.dataset.moduleId); break;
                         case 'back-to-modules': navigate('modules'); break;
                         case 'delete-assignment': if(confirm('Delete this assignment?')) deleteAssignment(actionEl.dataset.assignmentId); break;
+                        case 'upload-files': {
+                            // Create input at body level — outside any CSS transform/overflow
+                            const modId = actionEl.dataset.moduleId;
+                            const tmpInput = document.createElement('input');
+                            tmpInput.type = 'file';
+                            tmpInput.multiple = true;
+                            tmpInput.accept = '.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.png,.jpg,.jpeg';
+                            tmpInput.style.cssText = 'position:fixed;top:-999px;left:-999px;opacity:0;';
+                            document.body.appendChild(tmpInput);
+                            tmpInput.addEventListener('change', async () => {
+                                const files = Array.from(tmpInput.files || []);
+                                document.body.removeChild(tmpInput);
+                                if (!files.length) return;
+                                const container = document.getElementById('mat-' + modId);
+                                if (container) container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Saving ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '…</div>';
+                                try {
+                                    await Promise.all(files.map(f => dbSaveFile(modId, f)));
+                                    const allFiles = await dbGetModuleFiles(modId);
+                                    if (container) container.innerHTML = renderMaterialsContent(modId, allFiles);
+                                } catch(err) {
+                                    alert('Error saving: ' + err.message);
+                                    if (container) container.innerHTML = renderMaterialsContent(modId, []);
+                                }
+                            });
+                            tmpInput.click(); // safe: we are inside a user-gesture click handler
+                            break;
+                        }
                         case 'export': exportData(); break;
                         case 'import': importData(); break;
                         case 'theme': {
@@ -3044,24 +3067,7 @@
             });
             // Single delegated change handler
             document.addEventListener('change', function(e) {
-                // File upload input
-                const fileInput = e.target.closest('input[type="file"][data-module-id]');
-                if (fileInput && fileInput.files.length > 0) {
-                    const moduleId = fileInput.dataset.moduleId;
-                    const files = Array.from(fileInput.files);
-                    const container = document.getElementById('mat-' + moduleId);
-                    if (container) container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Saving ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '…</div>';
-                    Promise.all(files.map(f => dbSaveFile(moduleId, f)))
-                        .then(() => dbGetModuleFiles(moduleId))
-                        .then(allFiles => {
-                            if (container) container.innerHTML = renderMaterialsContent(moduleId, allFiles);
-                        })
-                        .catch(err => {
-                            alert('Error saving files: ' + err.message);
-                            if (container) container.innerHTML = renderMaterialsContent(moduleId, []);
-                        });
-                    return;
-                }
+                // File inputs are now handled directly in the upload-files click case (body-level input)
                 // Assignment status dropdown
                 const statusSel = e.target.closest('.status-select');
                 if (statusSel) {
@@ -3091,7 +3097,7 @@
                 const zone = e.target.closest('.materials-upload-zone');
                 if (!zone) return;
                 e.preventDefault(); zone.classList.remove('drag-over');
-                const moduleId = zone.querySelector('input[data-module-id]')?.dataset.moduleId;
+                const moduleId = zone.dataset.moduleId;
                 if (!moduleId) return;
                 const files = Array.from(e.dataTransfer.files);
                 if (!files.length) return;
